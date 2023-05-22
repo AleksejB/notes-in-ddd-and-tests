@@ -1,0 +1,51 @@
+plugins {
+    alias(libs.plugins.plugin.android.lib)
+    alias(libs.plugins.plugin.kotlin.android)
+    alias(libs.plugins.plugin.kotlin.serialization)
+    alias(libs.plugins.plugin.kotlin.kapt)
+
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace 'com.aleksejb.core.domain'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    api libs.bundles.coroutines
+    api libs.bundles.retrofit
+
+    api libs.dagger.dagger
+
+    api libs.kotlinx.datetime
+
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
+}

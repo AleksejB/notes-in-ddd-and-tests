@@ -1,0 +1,70 @@
+plugins {
+    alias(libs.plugins.plugin.android)
+    alias(libs.plugins.plugin.kotlin.android)
+    alias(libs.plugins.plugin.kotlin.serialization)
+    alias(libs.plugins.plugin.kotlin.kapt)
+
+    id("kotlin-parcelize")
+}
+
+android {
+    namespace 'com.aleksejb.notesinddd'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.aleksejb.notesinddd"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.2.0'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation(libs.koin.compose)
+
+    implementation(libs.bundles.accompanist)
+    implementation(libs.appyx)
+
+    implementation(libs.material)
+
+    implementation(libs.bundles.androidx)
+    implementation(libs.bundles.compose.ui)
+
+    testImplementation(libs.testing.junit)
+
+    androidTestImplementation(libs.testing.androidx.junit)
+    androidTestImplementation(libs.testing.androidx.espresso.core)
+    androidTestImplementation(libs.testing.androidx.runner)
+    androidTestImplementation(libs.testing.androidx.work)
+}

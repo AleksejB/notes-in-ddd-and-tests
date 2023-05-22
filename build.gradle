@@ -1,0 +1,13 @@
+buildscript {
+    ext {
+        compose_version = '1.2.0'
+    }
+}// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.plugin.kotlin) apply false
+    alias(libs.plugins.plugin.kotlin.android) apply false
+    alias(libs.plugins.plugin.kotlin.kapt) apply false
+    alias(libs.plugins.plugin.kotlin.serialization) apply false
+    alias(libs.plugins.plugin.android) apply false
+    alias(libs.plugins.plugin.android.lib) apply false
+}

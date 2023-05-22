@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notes">Notes</string>
+    <string name="checkbox_notes">Checkbox notes</string>
+    <string name="image_notes">Image notes</string>
+    <string name="text_notes">Text notes</string>
+</resources>
