@@ -24,10 +24,7 @@ class NotesRootNode(
 
     override fun resolve(navTarget: NotesGraph, buildContext: BuildContext): Node {
         return when (navTarget) {
-            is NotesGraph.Notes -> {
-                Log.d("TAAAG", "in NotesRootNode, opening NotesNode")
-                NotesNode(buildContext = buildContext)
-            }
+            is NotesGraph.Notes -> NotesNode(buildContext = buildContext)
             is NotesGraph.Note -> NoteNode(
                 buildContext = buildContext,
                 noteBasicInfo = NoteBasicInfo(0, NoteType.TEXT)

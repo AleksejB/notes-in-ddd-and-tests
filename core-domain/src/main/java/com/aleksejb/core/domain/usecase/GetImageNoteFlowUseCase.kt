@@ -1,14 +1,13 @@
 package com.aleksejb.core.domain.usecase
 
-import androidx.paging.PagingData
 import com.aleksejb.core.domain.datasource.ImageNoteDataSource
 import com.aleksejb.core.domain.model.ImageNote
 import kotlinx.coroutines.flow.Flow
 
-class GetImageNotesPagerUseCase(
+class GetImageNoteFlowUseCase(
     private val imageNoteDataSource: ImageNoteDataSource
 ) {
-    operator fun invoke(): Flow<PagingData<ImageNote>> {
-        return imageNoteDataSource.getImageNotesPagingDataAsFlow()
+    operator fun invoke(id: Int): Flow<ImageNote> {
+        return imageNoteDataSource.getImageNoteById(id)
     }
 }

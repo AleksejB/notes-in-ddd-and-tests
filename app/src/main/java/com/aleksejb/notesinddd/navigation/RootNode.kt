@@ -21,10 +21,7 @@ class RootNode(
 
     override fun resolve(navTarget: RootGraph, buildContext: BuildContext): Node {
         return when (navTarget) {
-            is RootGraph.NotesGraph -> {
-                Log.d("TAAAG", "in RootNode, navigating to NotesRootNode")
-                NotesRootNode(buildContext)
-            }
+            is RootGraph.NotesGraph -> NotesRootNode(buildContext)
         }
     }
 

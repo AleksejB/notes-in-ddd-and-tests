@@ -2,11 +2,12 @@ package com.aleksejb.core.domain.usecase
 
 import com.aleksejb.core.domain.datasource.CheckboxNoteDataSource
 import com.aleksejb.core.domain.model.CheckboxNote
+import kotlinx.coroutines.flow.Flow
 
-class SaveCheckboxNoteUseCase(
+class GetCheckboxNoteFlowUseCase(
     private val checkboxNoteDataSource: CheckboxNoteDataSource
 ) {
-    suspend operator fun invoke(checkboxNote: CheckboxNote) {
-        checkboxNoteDataSource.insertCheckboxNote(checkboxNote)
+    operator fun invoke(id: Int): Flow<CheckboxNote> {
+        return checkboxNoteDataSource.getCheckboxNoteById(id)
     }
 }
