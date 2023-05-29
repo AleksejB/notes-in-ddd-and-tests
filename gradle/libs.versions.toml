@@ -26,7 +26,7 @@ google-services-plugin = "4.3.15"
 hilt-compose = "1.0.0"
 hilt-core = "2.44.2"
 hilt-integrations = "1.0.0"
-kotlin = "1.7.10"
+kotlin = "1.7.0"
 kotlin-bom = "1.8.0"
 kotlinter-plugin = "3.10.0"
 kotlinx-coroutines = "1.6.1"
@@ -61,8 +61,6 @@ android-material = "1.8.0"
 koin-core = "3.3.3"
 koin-compose = "3.4.2"
 koin-annotations = "1.1.0"
-
-zxing = "4.3.0"
 
 [libraries]
 appyx = { module = "com.bumble.appyx:core", version.ref = "appyx" }
@@ -155,8 +153,6 @@ koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin-compose" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-core" }
-
-zxing = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing" }
 
 [bundles]
 androidx = ["androidx-appcompat", "androidx-cardview", "androidx-constraintlayout", "androidx-core", "androidx-datastore", "androidx-lifecycle-runtime", "androidx-lifecycle-compose", "androidx-startup", "androidx-work", "androidx-splashscreen"]

@@ -7,16 +7,21 @@ import com.aleksejb.core.ui.viewmodel.MVIViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class NotesViewModel(
-    private val getCheckboxNotesPagerUseCase: GetCheckboxNotesPagerUseCase,
-    private val getTextNotesPagerUseCase: GetTextNotesPagerUseCase,
-    private val getImageNotesPagerUseCase: GetImageNotesPagerUseCase
+//    private val getCheckboxNotesPagerUseCase: GetCheckboxNotesPagerUseCase,
+//    private val getTextNotesPagerUseCase: GetTextNotesPagerUseCase,
+//    private val getImageNotesPagerUseCase: GetImageNotesPagerUseCase
 ): MVIViewModel<NotesState, NotesEvent, NotesEffect>() {
 
     override val _state = MutableStateFlow(NotesState())
 
     override fun handleEvent(event: NotesEvent) {
         when (event) {
-            else -> {}
+            is NotesEvent.OnNewNoteClicked -> {}
+            is NotesEvent.OnNoteTypeSelected -> {
+                if (state.value.currentTab == event.noteType) return
+
+                updateState { copy(currentTab = event.noteType) }
+            }
         }
     }
 

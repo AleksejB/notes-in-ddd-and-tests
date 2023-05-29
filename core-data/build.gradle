@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(":core-domain")
+    implementation project(":core-domain")
 
     implementation libs.bundles.room
     kapt libs.room.compiler

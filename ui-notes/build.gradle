@@ -1,6 +1,7 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.plugin.android.lib)
+    alias(libs.plugins.plugin.kotlin.android)
+    alias(libs.plugins.plugin.kotlin.kapt)
 }
 
 android {
@@ -24,6 +25,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.2.0'
     }
     kotlinOptions {
         jvmTarget = '1.8'

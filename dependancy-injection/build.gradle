@@ -1,6 +1,7 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.plugin.android.lib)
+    alias(libs.plugins.plugin.kotlin.android)
+    alias(libs.plugins.plugin.kotlin.kapt)
 }
 
 android {
@@ -31,9 +32,9 @@ android {
 }
 
 dependencies {
-    implementation(":core-domain")
-    implementation(":core-data")
-    implementation(":ui-notes")
+    implementation project(":core-domain")
+    implementation project(":core-data")
+    implementation project(":ui-notes")
 
     implementation libs.koin.compose
     implementation libs.koin.android
