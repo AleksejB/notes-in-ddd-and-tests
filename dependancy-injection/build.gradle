@@ -36,6 +36,11 @@ dependencies {
     implementation project(":core-data")
     implementation project(":core-ui")
     implementation project(":ui-notes")
+    implementation project(":ui-text-note")
+    implementation project(":ui-image-note")
+    implementation project(":ui-checkbox-note")
+
+    implementation libs.room.ktx
 
     implementation libs.koin.compose
     implementation libs.koin.android

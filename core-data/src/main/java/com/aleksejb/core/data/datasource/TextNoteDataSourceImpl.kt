@@ -12,6 +12,7 @@ import com.aleksejb.core.domain.model.TextNote
 import com.aleksejb.core.domain.util.Constants.PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 class TextNoteDataSourceImpl(
     private val textNoteDao: TextNoteDao
@@ -27,8 +28,10 @@ class TextNoteDataSourceImpl(
         }
     }
 
-    override fun getTextNoteById(id: Int): Flow<TextNote> {
-        return textNoteDao.getNoteByIdAsFlow(id).map { textNoteEntity -> textNoteEntity.toTextNote() }
+    override fun getTextNoteById(id: Int): Flow<TextNote?> {
+        return textNoteDao.getNoteByIdAsFlow(id).map { textNoteEntity ->
+            textNoteEntity?.toTextNote()
+        }
     }
 
     override suspend fun insertTextNote(textNote: TextNote) {

@@ -9,6 +9,7 @@ import com.aleksejb.core.domain.model.CheckboxNote
 data class CheckboxNoteEntity(
     @PrimaryKey val id: Int,
     val title: String,
+//    @field:TypeConverters(CheckboxItem::class)
     val items: List<CheckboxItem>
 )
 

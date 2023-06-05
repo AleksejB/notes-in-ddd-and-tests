@@ -1,0 +1,56 @@
+plugins {
+    alias(libs.plugins.plugin.android.lib)
+    alias(libs.plugins.plugin.kotlin.android)
+    alias(libs.plugins.plugin.kotlin.kapt)
+}
+
+android {
+    namespace 'com.aleksejb.ui.checkbox.note'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.2.0'
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    implementation project(":core-domain")
+    implementation project(":core-ui")
+
+    implementation(libs.bundles.accompanist)
+    implementation(libs.appyx)
+
+    implementation(libs.androidx.biometric)
+
+    implementation(libs.material)
+
+    implementation(libs.bundles.androidx)
+    implementation(libs.bundles.compose.ui)
+
+    implementation libs.koin.compose
+}

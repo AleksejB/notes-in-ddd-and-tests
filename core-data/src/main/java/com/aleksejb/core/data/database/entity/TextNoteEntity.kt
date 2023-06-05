@@ -6,7 +6,7 @@ import com.aleksejb.core.domain.model.TextNote
 
 @Entity(tableName = "text_note")
 data class TextNoteEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int?,
     val title: String,
     val text: String
 )

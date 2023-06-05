@@ -2,6 +2,7 @@ package com.aleksejb.core.domain.datasource
 
 import androidx.paging.PagingData
 import com.aleksejb.core.domain.model.CheckboxNote
+//import com.aleksejb.core.domain.model.CheckboxNote
 import kotlinx.coroutines.flow.Flow
 
 interface CheckboxNoteDataSource {

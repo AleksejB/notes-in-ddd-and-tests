@@ -57,7 +57,9 @@ dependencies {
     implementation project(":dependancy-injection")
     implementation project(":ui-navigation")
     implementation project(":ui-notes")
-    implementation project(":ui-note")
+    implementation project(":ui-text-note")
+    implementation project(":ui-image-note")
+    implementation project(":ui-checkbox-note")
 
     implementation(libs.koin.compose)
 

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetTextNoteFlowUseCase(
     private val textNoteDataSource: TextNoteDataSource
 ) {
-    operator fun invoke(id: Int): Flow<TextNote> {
+    operator fun invoke(id: Int): Flow<TextNote?> {
         return textNoteDataSource.getTextNoteById(id)
     }
 }

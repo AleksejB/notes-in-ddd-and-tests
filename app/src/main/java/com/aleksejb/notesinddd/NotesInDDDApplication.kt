@@ -1,7 +1,7 @@
 package com.aleksejb.notesinddd
 
 import android.app.Application
-import com.aleksejb.notesinddd.koin.appModule
+import com.aleksejb.dependancy.injection.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

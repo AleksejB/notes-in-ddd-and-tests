@@ -13,7 +13,6 @@ class MainActivity : NodeActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            Log.d("TAAAG", "reached setContent")
             AppTheme {
                 NodeHost(
                     integrationPoint = appyxIntegrationPoint,
