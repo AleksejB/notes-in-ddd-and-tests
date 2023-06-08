@@ -1,4 +1,10 @@
 package com.aleksejb.ui.checkbox.note
 
-class CheckboxNoteScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun CheckboxNoteScreen(
+
+) {
+
 }

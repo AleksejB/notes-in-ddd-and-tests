@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetCheckboxNoteFlowUseCase(
     private val checkboxNoteDataSource: CheckboxNoteDataSource
 ) {
-    operator fun invoke(id: Int): Flow<CheckboxNote> {
+    operator fun invoke(id: Int): Flow<CheckboxNote?> {
         return checkboxNoteDataSource.getCheckboxNoteById(id)
     }
 }

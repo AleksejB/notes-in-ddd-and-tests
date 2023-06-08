@@ -1,5 +1,6 @@
 package com.aleksejb.ui.text.note
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -20,7 +21,10 @@ fun TextNoteScreen(
     val state by viewModel.state.collectAsState()
 
     DisposableEffect(key1 = Unit) {
-        onDispose { viewModel.onDispose() }
+        onDispose {
+            Log.d("TAAAG", "onDispose called")
+            viewModel.onDispose()
+        }
     }
 
     TextNoteScreenContent(state = state, eventHandler = viewModel::postEvent)
@@ -38,7 +42,7 @@ private fun TextNoteScreenContent(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        TItleTextField(state, eventHandler)
+        TitleTextField(state, eventHandler)
 
         TextTextField(state, eventHandler)
     }
@@ -59,15 +63,21 @@ private fun TextTextField(
 }
 
 @Composable
-private fun TItleTextField(
+private fun TitleTextField(
     state: TextNoteState,
     eventHandler: (TextNoteEvent) -> Unit
 ) {
+
+    //why is the cursor moving off?
+
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = dimensionResource(id = R.dimen.medium_100)),
         value = state.title,
-        onValueChange = { eventHandler(TextNoteEvent.OnTitleChanged(it)) }
+        onValueChange = {
+            Log.d("TAAAG", "TitleTextField, onValueChange: $it")
+            eventHandler(TextNoteEvent.OnTitleChanged(it))
+        }
     )
 }

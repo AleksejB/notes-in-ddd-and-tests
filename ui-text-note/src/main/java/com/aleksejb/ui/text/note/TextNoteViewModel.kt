@@ -6,9 +6,8 @@ import com.aleksejb.core.domain.usecase.GetTextNoteFlowUseCase
 import com.aleksejb.core.domain.usecase.SaveTextNoteUseCase
 import com.aleksejb.core.domain.util.Constants.NON_EXISTENT_NOTE_ID
 import com.aleksejb.core.ui.viewmodel.MVIViewModel
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 class TextNoteViewModel(
     private val noteId: Int,
@@ -18,25 +17,19 @@ class TextNoteViewModel(
 
     override val _state = MutableStateFlow(TextNoteState())
 
-    init { observeNoteIfExists() }
+    init { getNoteIfExists() }
 
     override fun handleEvent(event: TextNoteEvent) {
         when (event) {
-            is TextNoteEvent.OnTitleChanged -> {
-                viewModelScope.launch {
-                    if (noteExists()) saveNote() else updateTitle(event.input)
-                }
-            }
-            is TextNoteEvent.OnTextChanged -> {
-                viewModelScope.launch {
-                    if (noteExists()) saveNote() else updateText(event.input)
-                }
-            }
+            is TextNoteEvent.OnTitleChanged -> updateTitle(event.input)
+            is TextNoteEvent.OnTextChanged -> updateText(event.input)
         }
     }
 
     fun onDispose() {
-        viewModelScope.launch {
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        scope.launch {
             if (noteExists()) cancel()
 
             saveTextNoteUseCase.invoke(
@@ -57,25 +50,30 @@ class TextNoteViewModel(
         updateState { copy(title = title) }
     }
 
-    private suspend fun saveNote() {
-        saveTextNoteUseCase.invoke(
-            TextNote(
-                id = noteId,
-                title = state.value.title,
-                text = state.value.text
+    private fun saveNote(title: String = state.value.title, text: String = state.value.text) {
+        viewModelScope.launch {
+            saveTextNoteUseCase.invoke(
+                TextNote(
+                    id = noteId,
+                    title = title,
+                    text = text
+                )
             )
-        )
+        }
     }
 
     private fun noteExists() = noteId != NON_EXISTENT_NOTE_ID
 
-    private fun observeNoteIfExists() {
-        viewModelScope.launch {
-            if (noteId == NON_EXISTENT_NOTE_ID) return@launch
+    private fun noteDoesNotExist() = noteId == NON_EXISTENT_NOTE_ID
 
-            getTextNoteFlowUseCase.invoke(noteId).collect { note ->
-                note?.let { updateState { copy(title = it.title, text = it.text) } }
+    private fun getNoteIfExists() {
+        viewModelScope.launch {
+            if (noteDoesNotExist()) cancel()
+
+            getTextNoteFlowUseCase.invoke(noteId)?.let {
+                updateState { copy(title = it.title, text = it.text) }
             }
         }
+
     }
 }

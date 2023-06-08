@@ -6,16 +6,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.aleksejb.core.data.database.entity.TextNoteEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TextNoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(textNoteEntity: TextNoteEntity)
+    suspend fun insert(textNoteEntity: TextNoteEntity): Long
 
     @Query("SELECT * FROM text_note WHERE id = :id")
-    fun getNoteByIdAsFlow(id: Int): Flow<TextNoteEntity?>
+    suspend fun getNoteById(id: Int): TextNoteEntity?
 
     @Query("SELECT * FROM text_note")
     fun getTextNotesPagingSource(): PagingSource<Int, TextNoteEntity>
