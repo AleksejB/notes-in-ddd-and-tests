@@ -28,10 +28,8 @@ class CheckboxNoteDataSourceImpl(
         }
     }
 
-    override fun getCheckboxNoteById(id: Int): Flow<CheckboxNote> {
-        return checkboxNoteDao.getNoteByIdAsFlow(id).map { checkboxNoteEntity ->
-            checkboxNoteEntity.toCheckboxNote()
-        }
+    override suspend fun getCheckboxNoteById(id: Int): CheckboxNote? {
+        return checkboxNoteDao.getNoteById(id)?.toCheckboxNote()
     }
 
     override suspend fun insertCheckboxNote(checkboxNote: CheckboxNote) {

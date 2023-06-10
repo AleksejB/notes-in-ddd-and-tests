@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
+import com.aleksejb.core.domain.model.CheckboxNote
 import com.aleksejb.core.domain.model.Note
 import com.aleksejb.core.domain.model.NoteType
 import com.aleksejb.core.domain.model.TextNote
@@ -44,7 +45,7 @@ fun NotesScreen(
         viewModel.effects.collect { effect ->
             when (effect) {
                 is NotesEffect.NavigateToNewNote -> {
-                    navigator.navigateToAppropriateNoteType(state.currentTab, NON_EXISTENT_NOTE_ID)
+                    navigator.navigateToAppropriateNoteType(state.currentTab, null)
                 }
                 is NotesEffect.NavigateToNote -> {
                     navigator.navigateToAppropriateNoteType(state.currentTab, effect.noteId)
@@ -87,11 +88,15 @@ private fun NotesScreenContent(state: NotesState, eventHandler: (NotesEvent) -> 
                     val notes = state.checkboxNotesPagingData.collectAsLazyPagingItems()
 
                     NotesLazyColumn(items = notes) {
-                        ImageAndCheckboxNoteItem(title = it.title) { eventHandler(NotesEvent.OnNoteClicked(it.id)) }
+                        ImageAndCheckboxNoteItem(noteId = it.id, title = it.title) { eventHandler(NotesEvent.OnNoteClicked(it)) }
                     }
                 }
                 NoteType.IMAGE -> {
+                    val notes = state.checkboxNotesPagingData.collectAsLazyPagingItems()
 
+                    NotesLazyColumn(items = notes) {
+                        ImageAndCheckboxNoteItem(noteId = it.id, title = it.title) { eventHandler(NotesEvent.OnNoteClicked(it)) }
+                    }
                 }
             }
         }
@@ -171,7 +176,7 @@ private fun TitleText() {
     )
 }
 
-private fun Navigator<NotesGraph>.navigateToAppropriateNoteType(noteType: NoteType, noteId: Int) {
+private fun Navigator<NotesGraph>.navigateToAppropriateNoteType(noteType: NoteType, noteId: Int?) {
     when (noteType) {
         NoteType.TEXT -> navigate(NotesGraph.TextNote(noteId))
         NoteType.IMAGE -> navigate(NotesGraph.ImageNote(noteId))
@@ -214,11 +219,11 @@ private fun TextNoteBodyPreviewText(textNote: TextNote) {
 }
 
 @Composable
-private fun ImageAndCheckboxNoteItem(title: String, onClick: () -> Unit) {
+private fun ImageAndCheckboxNoteItem(noteId: Int?, title: String, onClick: (Int) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable { onClick(noteId!!) }
     ) {
         NoteItemTitleText(title = title)
 

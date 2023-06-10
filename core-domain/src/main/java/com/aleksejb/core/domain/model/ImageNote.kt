@@ -1,6 +1,9 @@
 package com.aleksejb.core.domain.model
 
+import android.graphics.Bitmap
+
 data class ImageNote(
+    val id: Int?,
     val title: String,
-    val images: List<String> //TODO: change to image of some sort
+    val images: List<Bitmap>
 ): Note

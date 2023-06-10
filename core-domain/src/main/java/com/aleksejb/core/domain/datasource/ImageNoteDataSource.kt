@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface ImageNoteDataSource {
 
     fun getImageNotesPagingDataAsFlow(): Flow<PagingData<ImageNote>>
-    fun getImageNoteById(id: Int): Flow<ImageNote>
+    suspend fun getImageNoteById(id: Int): ImageNote?
     suspend fun insertImageNote(imageNote: ImageNote)
 }

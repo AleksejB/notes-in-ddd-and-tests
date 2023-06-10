@@ -1,4 +1,4 @@
-package com.aleksejb.core.domain.usecase
+package com.aleksejb.core.domain.usecase.image
 
 import com.aleksejb.core.domain.datasource.ImageNoteDataSource
 import com.aleksejb.core.domain.model.ImageNote

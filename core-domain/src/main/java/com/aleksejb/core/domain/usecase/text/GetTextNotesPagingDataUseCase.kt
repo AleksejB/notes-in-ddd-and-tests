@@ -1,4 +1,4 @@
-package com.aleksejb.core.domain.usecase
+package com.aleksejb.core.domain.usecase.text
 
 import androidx.paging.PagingData
 import com.aleksejb.core.domain.datasource.TextNoteDataSource

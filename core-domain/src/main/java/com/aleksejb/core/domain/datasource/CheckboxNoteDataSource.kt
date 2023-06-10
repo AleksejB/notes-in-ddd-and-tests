@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CheckboxNoteDataSource {
     fun getCheckboxNotesPagingDataAsFlow(): Flow<PagingData<CheckboxNote>>
-    fun getCheckboxNoteById(id: Int): Flow<CheckboxNote>
+    suspend fun getCheckboxNoteById(id: Int): CheckboxNote?
     suspend fun insertCheckboxNote(checkboxNote: CheckboxNote)
 }

@@ -1,4 +1,4 @@
-package com.aleksejb.core.domain.usecase
+package com.aleksejb.core.domain.usecase.checkbox
 
 import com.aleksejb.core.domain.datasource.CheckboxNoteDataSource
 import com.aleksejb.core.domain.model.CheckboxNote

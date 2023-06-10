@@ -12,5 +12,5 @@ data class NotesState(
     val currentTab: NoteType = NoteType.TEXT,
     val checkboxNotesPagingData: Flow<PagingData<CheckboxNote>> = flowOf(),
     val textNotesPagingData: Flow<PagingData<TextNote>> = flowOf(),
-    val imageNote: List<ImageNote> = emptyList()
+    val imageNotesPagingData: Flow<PagingData<ImageNote>> = flowOf()
 )

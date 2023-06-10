@@ -1,13 +1,12 @@
-package com.aleksejb.core.domain.usecase
+package com.aleksejb.core.domain.usecase.image
 
 import com.aleksejb.core.domain.datasource.ImageNoteDataSource
 import com.aleksejb.core.domain.model.ImageNote
-import kotlinx.coroutines.flow.Flow
 
-class GetImageNoteFlowUseCase(
+class GetImageNoteUseCase(
     private val imageNoteDataSource: ImageNoteDataSource
 ) {
-    operator fun invoke(id: Int): Flow<ImageNote> {
+    suspend operator fun invoke(id: Int): ImageNote? {
         return imageNoteDataSource.getImageNoteById(id)
     }
 }

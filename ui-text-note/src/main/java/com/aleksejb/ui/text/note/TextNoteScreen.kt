@@ -20,12 +20,7 @@ fun TextNoteScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    DisposableEffect(key1 = Unit) {
-        onDispose {
-            Log.d("TAAAG", "onDispose called")
-            viewModel.onDispose()
-        }
-    }
+    DisposableEffect(key1 = Unit) { onDispose { viewModel.onDispose() } }
 
     TextNoteScreenContent(state = state, eventHandler = viewModel::postEvent)
 }
@@ -67,17 +62,11 @@ private fun TitleTextField(
     state: TextNoteState,
     eventHandler: (TextNoteEvent) -> Unit
 ) {
-
-    //why is the cursor moving off?
-
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = dimensionResource(id = R.dimen.medium_100)),
         value = state.title,
-        onValueChange = {
-            Log.d("TAAAG", "TitleTextField, onValueChange: $it")
-            eventHandler(TextNoteEvent.OnTitleChanged(it))
-        }
+        onValueChange = { eventHandler(TextNoteEvent.OnTitleChanged(it)) }
     )
 }

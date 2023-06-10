@@ -10,11 +10,11 @@ sealed interface NotesGraph: NavGraph {
     object Notes: NotesGraph
 
     @Parcelize
-    data class TextNote(val noteId: Int): NotesGraph
+    data class TextNote(val noteId: Int?): NotesGraph
 
     @Parcelize
-    data class CheckboxNote(val noteId: Int): NotesGraph
+    data class CheckboxNote(val noteId: Int?): NotesGraph
 
     @Parcelize
-    data class ImageNote(val noteId: Int): NotesGraph
+    data class ImageNote(val noteId: Int?): NotesGraph
 }

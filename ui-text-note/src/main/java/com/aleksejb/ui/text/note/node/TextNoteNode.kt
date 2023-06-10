@@ -13,7 +13,7 @@ import com.bumble.appyx.core.node.Node
 class TextNoteNode(
     buildContext: BuildContext,
     private val noteId: Int?,
-    private val viewModelOwnerPlugin: ViewModelOwnerPlugin = ViewModelOwnerPlugin(),
+    private val viewModelOwnerPlugin: ViewModelOwnerPlugin = ViewModelOwnerPlugin()
 ): Node(
     buildContext = buildContext,
     plugins = listOf(viewModelOwnerPlugin)
@@ -27,8 +27,4 @@ class TextNoteNode(
             TextNoteScreen(noteId = noteId)
         }
     }
-
-//    override fun getLifecycle(): Lifecycle {
-//        return super.lifecycle
-//    }
 }

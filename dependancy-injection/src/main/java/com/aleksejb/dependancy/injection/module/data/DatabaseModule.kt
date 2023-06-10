@@ -10,7 +10,7 @@ val databaseModule = module {
     single { provideNotesInDDDDatabase(androidContext()) }
 
     factory { (get(clazz = NotesInDDDDatabase::class) as NotesInDDDDatabase).getCheckboxNoteDao() }
-//    factory { (get(clazz = NotesInDDDDatabase::class) as NotesInDDDDatabase).getImageNoteDao() }
+    factory { (get(clazz = NotesInDDDDatabase::class) as NotesInDDDDatabase).getImageNoteDao() }
     factory { (get(clazz = NotesInDDDDatabase::class) as NotesInDDDDatabase).getTextNoteDao() }
 }
 

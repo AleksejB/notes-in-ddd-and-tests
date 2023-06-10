@@ -7,9 +7,8 @@ import com.aleksejb.core.domain.model.CheckboxNote
 
 @Entity(tableName = "checkbox_note")
 data class CheckboxNoteEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int?,
     val title: String,
-//    @field:TypeConverters(CheckboxItem::class)
     val items: List<CheckboxItem>
 )
 

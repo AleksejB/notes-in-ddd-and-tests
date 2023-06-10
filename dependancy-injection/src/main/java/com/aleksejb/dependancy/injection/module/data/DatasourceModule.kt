@@ -10,6 +10,6 @@ import org.koin.dsl.module
 
 val datasourceModule = module {
     factory<CheckboxNoteDataSource> { CheckboxNoteDataSourceImpl(get()) }
-//    factory<ImageNoteDataSource> { ImageNoteDataSourceImpl(get()) }
+    factory<ImageNoteDataSource> { ImageNoteDataSourceImpl(get()) }
     factory<TextNoteDataSource> { TextNoteDataSourceImpl(get()) }
 }

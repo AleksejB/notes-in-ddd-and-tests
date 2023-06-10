@@ -10,8 +10,12 @@ import com.aleksejb.core.data.database.entity.CheckboxNoteEntity
 import com.aleksejb.core.data.database.entity.ImageNoteEntity
 import com.aleksejb.core.data.database.entity.TextNoteEntity
 import com.aleksejb.core.data.database.typeconverter.impl.CheckboxItemTypeConverter
+import com.aleksejb.core.data.database.typeconverter.impl.StringListTypeConverter
 
-@TypeConverters(CheckboxItemTypeConverter::class)
+@TypeConverters(
+    CheckboxItemTypeConverter::class,
+    StringListTypeConverter::class
+)
 @Database(
     entities = [
         CheckboxNoteEntity::class,

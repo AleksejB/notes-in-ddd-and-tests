@@ -1,4 +1,4 @@
-package com.aleksejb.core.domain.usecase
+package com.aleksejb.core.domain.usecase.text
 
 import android.util.Log
 import com.aleksejb.core.domain.datasource.TextNoteDataSource
@@ -8,7 +8,6 @@ class SaveTextNoteUseCase(
     private val textNoteDataSource: TextNoteDataSource
 ) {
     suspend operator fun invoke(textNote: TextNote) {
-        val rowsAffected = textNoteDataSource.insertTextNote(textNote)
-        Log.d("TAAAG", "rowsAffected: $rowsAffected")
+        textNoteDataSource.insertTextNote(textNote)
     }
 }

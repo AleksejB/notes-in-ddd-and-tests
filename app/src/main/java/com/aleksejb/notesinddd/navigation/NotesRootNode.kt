@@ -37,10 +37,12 @@ class NotesRootNode(
                 navigator = this
             )
             is NotesGraph.CheckboxNote -> CheckboxNoteNode(
-                buildContext = buildContext
+                buildContext = buildContext,
+                noteId = navTarget.noteId
             )
             is NotesGraph.ImageNote -> ImageNoteNode(
-                buildContext = buildContext
+                buildContext = buildContext,
+                noteId = navTarget.noteId
             )
             is NotesGraph.TextNote -> TextNoteNode(
                 buildContext = buildContext,
@@ -58,10 +60,6 @@ class NotesRootNode(
         }
 
         return true
-    }
-
-    override fun navigateBack() {
-        TODO("Not yet implemented")
     }
     
     @Composable
