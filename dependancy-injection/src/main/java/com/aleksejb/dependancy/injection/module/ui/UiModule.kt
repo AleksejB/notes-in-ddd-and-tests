@@ -7,7 +7,7 @@ import com.aleksejb.ui.text.note.TextNoteViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-val notesUiModule = module {
+val uiModule = module {
     viewModel { NotesViewModel(get(), get(), get()) }
 
     viewModel { (noteId: Int?) -> TextNoteViewModel(noteId, get(), get(), get()) }

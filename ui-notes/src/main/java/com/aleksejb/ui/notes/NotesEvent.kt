@@ -1,6 +1,5 @@
 package com.aleksejb.ui.notes
 
-import com.aleksejb.core.domain.model.NoteBasicInfo
 import com.aleksejb.core.domain.model.NoteType
 
 sealed interface NotesEvent {

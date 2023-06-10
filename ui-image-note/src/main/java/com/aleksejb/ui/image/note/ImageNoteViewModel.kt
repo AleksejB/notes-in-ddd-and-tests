@@ -44,7 +44,6 @@ class ImageNoteViewModel(
     }
 
     private suspend fun saveNote() {
-        Log.d("TAAAG", "saving note")
         saveImageNoteUseCase.invoke(
             ImageNote(
                 id = noteId,

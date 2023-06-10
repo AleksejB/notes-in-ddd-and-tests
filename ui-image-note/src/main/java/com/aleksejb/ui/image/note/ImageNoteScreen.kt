@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.aleksejb.core.data.util.getBitmapFromUri
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import com.aleksejb.core.ui.R
@@ -56,16 +57,7 @@ private fun ImageNoteScreenContent(
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-
-        val bitmap = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-        } else {
-            val source = ImageDecoder.createSource(context.contentResolver, uri)
-            ImageDecoder.decodeBitmap(source)
-        }
-
-        eventHandler(ImageNoteEvent.OnNewImageSelected(bitmap))
+        uri?.let { eventHandler(ImageNoteEvent.OnNewImageSelected(context.getBitmapFromUri(uri))) }
     }
 
     Column(

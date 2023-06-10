@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.aleksejb.core.data.util.decodeStringToBitmap
+import com.aleksejb.core.data.util.encodeBitmapToString
 import com.aleksejb.core.domain.model.ImageNote
 import java.io.ByteArrayOutputStream
 
@@ -18,19 +20,11 @@ data class ImageNoteEntity(
 fun ImageNoteEntity.toImageNote() = ImageNote(
     id = id,
     title = title,
-    images = images.map { encodedString ->
-        val byteArray = Base64.decode(encodedString, Base64.DEFAULT)
-        BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-    }
+    images = images.map { encodedString -> decodeStringToBitmap(encodedString) }
 )
 
 fun ImageNote.toImageNoteEntity() = ImageNoteEntity(
     id = id,
     title = title,
-    images = images.map { bitmap ->
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        Base64.encodeToString(byteArray, Base64.DEFAULT)
-    }
+    images = images.map { bitmap -> encodeBitmapToString(bitmap) }
 )

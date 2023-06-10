@@ -1,4 +1,3 @@
 package com.aleksejb.ui.checkbox.note
 
-sealed interface CheckboxNoteEffect {
-}
+sealed interface CheckboxNoteEffect

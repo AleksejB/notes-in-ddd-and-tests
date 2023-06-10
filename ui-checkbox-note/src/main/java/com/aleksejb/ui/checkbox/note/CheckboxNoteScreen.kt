@@ -61,25 +61,28 @@ private fun CheckboxNoteScreenContent(
                 )
             }
 
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .background(Color.Gray),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clickable { eventHandler(CheckboxNoteEvent.OnNewItemClicked) },
-                        painter = painterResource(id = R.drawable.ic_add),
-                        contentDescription = null
-                    )
-                }
-            }
+            item { NewCheckboxItemRow(eventHandler) }
         }
+    }
+}
+
+@Composable
+private fun NewCheckboxItemRow(eventHandler: (CheckboxNoteEvent) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Image(
+            modifier = Modifier
+                .size(50.dp)
+                .clickable { eventHandler(CheckboxNoteEvent.OnNewItemClicked) }
+                .background(Color.Gray),
+            painter = painterResource(id = R.drawable.ic_add),
+            contentDescription = null
+        )
     }
 }
 

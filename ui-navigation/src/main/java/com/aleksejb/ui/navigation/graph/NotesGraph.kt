@@ -1,6 +1,5 @@
 package com.aleksejb.ui.navigation.graph
 
-import com.aleksejb.core.domain.model.NoteBasicInfo
 import com.aleksejb.ui.navigation.NavGraph
 import kotlinx.parcelize.Parcelize
 

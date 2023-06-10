@@ -33,7 +33,6 @@ class TextNoteDataSourceImpl(
     }
 
     override suspend fun insertTextNote(textNote: TextNote): Long {
-        Log.d("TAAAG", "inserting note: $textNote")
         return textNoteDao.insert(textNote.toTextNoteEntity())
     }
 }

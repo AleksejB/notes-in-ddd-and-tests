@@ -23,9 +23,7 @@ class CheckboxNoteViewModel(
 
     init { getNoteIfExists() }
 
-    fun onDispose() {
-        scope.launch { saveNote() }
-    }
+    fun onDispose() = scope.launch { saveNote() }
 
     override fun handleEvent(event: CheckboxNoteEvent) {
         when (event) {

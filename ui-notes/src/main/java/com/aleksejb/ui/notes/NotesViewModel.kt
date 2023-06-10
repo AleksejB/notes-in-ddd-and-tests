@@ -1,15 +1,11 @@
 package com.aleksejb.ui.notes
 
-import android.util.Log
-import androidx.paging.map
-import com.aleksejb.core.domain.model.NoteBasicInfo
 import com.aleksejb.core.domain.model.NoteType
 import com.aleksejb.core.domain.usecase.checkbox.GetCheckboxNotesPagingDataUseCase
 import com.aleksejb.core.domain.usecase.image.GetImageNotesPagingDataUseCase
 import com.aleksejb.core.domain.usecase.text.GetTextNotesPagingDataUseCase
 import com.aleksejb.core.ui.viewmodel.MVIViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 
 class NotesViewModel(
     private val getCheckboxNotesPagingDataUseCase: GetCheckboxNotesPagingDataUseCase,
