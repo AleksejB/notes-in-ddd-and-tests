@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface TextNoteDataSource {
     fun getTextNotesPagingDataAsFlow(): Flow<PagingData<TextNote>>
     suspend fun getTextNoteById(id: Int): TextNote?
-    suspend fun insertTextNote(textNote: TextNote): Long
+    suspend fun insertTextNote(textNote: TextNote)
 }

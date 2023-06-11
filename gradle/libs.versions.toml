@@ -138,6 +138,7 @@ testing-androidx-rules = "androidx.test:rules:1.4.1-alpha06"
 testing-androidx-runner = { module = "androidx.test:runner", version.ref = "testing-androidx-runner" }
 testing-androidx-work = { module = "androidx.work:work-testing", version.ref = "testing-androidx-work" }
 testing-junit = { module = "junit:junit", version.ref = "testing-junit" }
+testing-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber"}
 
