@@ -12,6 +12,7 @@ import androidx.compose.ui.res.dimensionResource
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import com.aleksejb.core.ui.R
+import com.aleksejb.core.ui.components.BaseNoteScreen
 
 @Composable
 fun TextNoteScreen(
@@ -30,15 +31,10 @@ private fun TextNoteScreenContent(
     state: TextNoteState,
     eventHandler: (TextNoteEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.medium_100))
-            .statusBarsPadding()
-            .navigationBarsPadding()
+    BaseNoteScreen(
+        title = state.title,
+        onTitleChanged = { eventHandler(TextNoteEvent.OnTitleChanged(it)) }
     ) {
-        TitleTextField(state, eventHandler)
-
         TextTextField(state, eventHandler)
     }
 }

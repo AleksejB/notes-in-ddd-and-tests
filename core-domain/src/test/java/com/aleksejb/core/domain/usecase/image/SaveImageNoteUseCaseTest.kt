@@ -14,7 +14,8 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class SaveImageNoteUseCaseTest {
 
-    lateinit var imageNoteFakeDataSource: ImageNoteDataSource
+    lateinit var getImageNoteUseCase: GetImageNoteUseCase
+    lateinit var saveImageNoteUseCase: SaveImageNoteUseCase
 
     var imageNotes = listOf(
         ImageNote(
@@ -40,12 +41,14 @@ class SaveImageNoteUseCaseTest {
     )
 
     @Before
-    fun initImageNoteFakeDataSource() {
-        imageNoteFakeDataSource = ImageNoteFakeDataSource(imageNotes)
+    fun initUseCases() {
+        val fakeDataSource = ImageNoteFakeDataSource(imageNotes)
+        getImageNoteUseCase = GetImageNoteUseCase(fakeDataSource)
+        saveImageNoteUseCase = SaveImageNoteUseCase(fakeDataSource)
     }
 
     @Test
-    fun insertImageNote_givenExistingId_replacesExistingNot() = runTest {
+    fun saveImageNoteUseCase_givenExistingId_replacesExistingNot() = runTest {
         //Given - the fake data source and a
         val newNote = ImageNote(
             id = 1,
@@ -53,14 +56,14 @@ class SaveImageNoteUseCaseTest {
             images = emptyList()
         )
         //When
-        imageNoteFakeDataSource.insertImageNote(newNote)
+        saveImageNoteUseCase.invoke(newNote)
         //Then
-        val note = imageNoteFakeDataSource.getImageNoteById(1)
+        val note = getImageNoteUseCase.invoke(1)
         assertEquals(newNote, note)
     }
 
     @Test
-    fun insertImageNote_givenNewId_savesNote() = runTest {
+    fun saveImageNoteUseCase_givenNewId_savesNote() = runTest {
         //Given - the fake data source and a
         val newNote = ImageNote(
             id = 5,
@@ -68,14 +71,14 @@ class SaveImageNoteUseCaseTest {
             images = emptyList()
         )
         //When
-        imageNoteFakeDataSource.insertImageNote(newNote)
+        saveImageNoteUseCase.invoke(newNote)
         //Then
-        val note = imageNoteFakeDataSource.getImageNoteById(5)
+        val note = getImageNoteUseCase.invoke(5)
         assertEquals(newNote, note)
     }
 
     @Test
-    fun insertImageNote_givenNullId_savesNewNote() = runTest {
+    fun saveImageNoteUseCase_givenNullId_savesNewNote() = runTest {
         //Given - the fake data source and a
         val newNote = ImageNote(
             id = null,
@@ -83,9 +86,9 @@ class SaveImageNoteUseCaseTest {
             images = emptyList()
         )
         //When
-        imageNoteFakeDataSource.insertImageNote(newNote)
+        saveImageNoteUseCase.invoke(newNote)
         //Then
-        val note = imageNoteFakeDataSource.getImageNoteById(imageNotes.size + 1)
+        val note = getImageNoteUseCase.invoke(imageNotes.size + 1)
         assertEquals(
             ImageNote(
                 id = imageNotes.size + 1,

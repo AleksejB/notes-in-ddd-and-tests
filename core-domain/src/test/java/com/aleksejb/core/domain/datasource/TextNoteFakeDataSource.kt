@@ -4,11 +4,12 @@ import androidx.paging.PagingData
 import com.aleksejb.core.domain.model.ImageNote
 import com.aleksejb.core.domain.model.TextNote
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class TextNoteFakeDataSource(var textNotes: List<TextNote>): TextNoteDataSource {
 
     override fun getTextNotesPagingDataAsFlow(): Flow<PagingData<TextNote>> {
-        TODO("Not yet implemented")
+        return flowOf(PagingData.from(textNotes))
     }
 
     override suspend fun getTextNoteById(id: Int): TextNote? {

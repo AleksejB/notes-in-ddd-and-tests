@@ -32,6 +32,7 @@ import com.aleksejb.core.data.util.getBitmapFromUri
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import com.aleksejb.core.ui.R
+import com.aleksejb.core.ui.components.BaseNoteScreen
 
 @Composable
 fun ImageNoteScreen(
@@ -60,13 +61,10 @@ private fun ImageNoteScreenContent(
         uri?.let { eventHandler(ImageNoteEvent.OnNewImageSelected(context.getBitmapFromUri(uri))) }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.medium_100))
+    BaseNoteScreen(
+        title = state.title,
+        onTitleChanged = { eventHandler(ImageNoteEvent.OnTitleChanged(it)) }
     ) {
-        TitleTextField(state, eventHandler)
-
         LazyVerticalGrid(
             modifier = Modifier
                 .padding(top = dimensionResource(id = R.dimen.medium_100)),
@@ -81,7 +79,7 @@ private fun ImageNoteScreenContent(
             }
 
             item {
-                NewImageClickableSurface(itemSize) {
+                NewImageClickableSurface(itemSize = itemSize) {
                     singlePhotoPickerLauncher.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
@@ -105,16 +103,4 @@ private fun NewImageClickableSurface(itemSize: Int, onClick: () -> Unit) {
             contentDescription = null
         )
     }
-}
-
-@Composable
-private fun TitleTextField(
-    state: ImageNoteState,
-    eventHandler: (ImageNoteEvent) -> Unit
-) {
-    TextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = state.title,
-        onValueChange = { eventHandler(ImageNoteEvent.OnTitleChanged(it)) }
-    )
 }

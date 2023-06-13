@@ -17,9 +17,10 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class SaveTextNoteUseCaseTest {
 
-    lateinit var textNoteFakeDataSource: TextNoteDataSource
+    lateinit var getTextNoteUseCase: GetTextNoteUseCase
+    lateinit var saveTextNoteUseCase: SaveTextNoteUseCase
 
-    var textNotes = listOf(
+    private var textNotes = listOf(
         TextNote(
             id = 1,
             title = "title1",
@@ -43,8 +44,10 @@ class SaveTextNoteUseCaseTest {
     )
 
     @Before
-    fun initImageNoteFakeDataSource() {
-        textNoteFakeDataSource = TextNoteFakeDataSource(textNotes)
+    fun initUseCases() {
+        val fakeDataSource = TextNoteFakeDataSource(textNotes)
+        getTextNoteUseCase = GetTextNoteUseCase(fakeDataSource)
+        saveTextNoteUseCase = SaveTextNoteUseCase(fakeDataSource)
     }
 
     @Test
@@ -56,9 +59,9 @@ class SaveTextNoteUseCaseTest {
             text = "newText1"
         )
         //When
-        textNoteFakeDataSource.insertTextNote(newNote)
+        saveTextNoteUseCase.invoke(newNote)
         //Then
-        val note = textNoteFakeDataSource.getTextNoteById(1)
+        val note = getTextNoteUseCase.invoke(1)
         assertEquals(newNote, note)
     }
 
@@ -71,9 +74,9 @@ class SaveTextNoteUseCaseTest {
             text = "text5"
         )
         //When
-        textNoteFakeDataSource.insertTextNote(newNote)
+        saveTextNoteUseCase.invoke(newNote)
         //Then
-        val note = textNoteFakeDataSource.getTextNoteById(5)
+        val note = getTextNoteUseCase.invoke(5)
         assertEquals(newNote, note)
     }
 
@@ -86,9 +89,9 @@ class SaveTextNoteUseCaseTest {
             text = "text5"
         )
         //When
-        textNoteFakeDataSource.insertTextNote(newNote)
+        saveTextNoteUseCase.invoke(newNote)
         //Then
-        val note = textNoteFakeDataSource.getTextNoteById(textNotes.size + 1)
+        val note = getTextNoteUseCase.invoke(textNotes.size + 1)
         assertEquals(
             TextNote(
                 id = 5,

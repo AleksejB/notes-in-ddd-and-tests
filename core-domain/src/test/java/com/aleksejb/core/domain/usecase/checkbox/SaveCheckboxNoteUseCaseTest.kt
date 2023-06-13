@@ -14,7 +14,8 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class SaveCheckboxNoteUseCaseTest {
 
-    lateinit var checkboxNoteFakeDataSource: CheckboxNoteDataSource
+    lateinit var saveCheckboxNoteUseCase: SaveCheckboxNoteUseCase
+    lateinit var getCheckboxNoteUseCase: GetCheckboxNoteUseCase
 
     val checkboxNotes = listOf(
         CheckboxNote(
@@ -40,12 +41,14 @@ class SaveCheckboxNoteUseCaseTest {
     )
 
     @Before
-    fun initCheckboxNoteFakeDataSource() {
-        checkboxNoteFakeDataSource = CheckboxNoteFakeDataSource(checkboxNotes)
+    fun initUseCases() {
+        val fakeDataSource = CheckboxNoteFakeDataSource(checkboxNotes)
+        saveCheckboxNoteUseCase = SaveCheckboxNoteUseCase(fakeDataSource)
+        getCheckboxNoteUseCase = GetCheckboxNoteUseCase(fakeDataSource)
     }
 
     @Test
-    fun insertTextNote_givenExistingId_replacesExistingNot() = runTest {
+    fun saveCheckboxNoteUseCase_givenExistingId_replacesExistingNot() = runTest {
         //Given - the fake data source and a
         val newNote = CheckboxNote(
             id = 1,
@@ -53,9 +56,9 @@ class SaveCheckboxNoteUseCaseTest {
             items = emptyList()
         )
         //When
-        checkboxNoteFakeDataSource.insertCheckboxNote(newNote)
+        saveCheckboxNoteUseCase.invoke(newNote)
         //Then
-        val note = checkboxNoteFakeDataSource.getCheckboxNoteById(1)
+        val note = getCheckboxNoteUseCase.invoke(1)
         assertEquals(
             newNote,
             note
@@ -63,7 +66,7 @@ class SaveCheckboxNoteUseCaseTest {
     }
 
     @Test
-    fun insertTextNote_givenNewId_savesNote() = runTest {
+    fun saveCheckboxNoteUseCase_givenNewId_savesNote() = runTest {
         //Given - the fake data source and a
         val newNote = CheckboxNote(
             id = 5,
@@ -71,14 +74,14 @@ class SaveCheckboxNoteUseCaseTest {
             items = emptyList()
         )
         //When
-        checkboxNoteFakeDataSource.insertCheckboxNote(newNote)
+        saveCheckboxNoteUseCase.invoke(newNote)
         //Then
-        val note = checkboxNoteFakeDataSource.getCheckboxNoteById(5)
+        val note = getCheckboxNoteUseCase.invoke(5)
         assertEquals(newNote, note)
     }
 
     @Test
-    fun insertTextNote_givenNullId_savesNewNote() = runTest {
+    fun saveCheckboxNoteUseCase_givenNullId_savesNewNote() = runTest {
         //Given - the fake data source and a
         val newNote = CheckboxNote(
             id = null,
@@ -86,9 +89,9 @@ class SaveCheckboxNoteUseCaseTest {
             items = emptyList()
         )
         //When
-        checkboxNoteFakeDataSource.insertCheckboxNote(newNote)
+        saveCheckboxNoteUseCase.invoke(newNote)
         //Then
-        val note = checkboxNoteFakeDataSource.getCheckboxNoteById(checkboxNotes.size + 1)
+        val note = getCheckboxNoteUseCase.invoke(checkboxNotes.size + 1)
         assertEquals(
             CheckboxNote(
                 id = checkboxNotes.size + 1,

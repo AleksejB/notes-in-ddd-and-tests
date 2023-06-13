@@ -93,7 +93,7 @@ private fun NotesScreenContent(state: NotesState, eventHandler: (NotesEvent) -> 
                     }
                 }
                 NoteType.IMAGE -> {
-                    val notes = state.checkboxNotesPagingData.collectAsLazyPagingItems()
+                    val notes = state.imageNotesPagingData.collectAsLazyPagingItems()
 
                     NotesLazyColumn(items = notes) {
                         ImageAndCheckboxNoteItem(noteId = it.id, title = it.title) { eventHandler(NotesEvent.OnNoteClicked(it)) }

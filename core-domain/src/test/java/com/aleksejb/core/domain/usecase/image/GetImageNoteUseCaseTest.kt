@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class GetImageNoteUseCaseTest {
 
-    lateinit var imageNoteFakeDataSource: ImageNoteDataSource
+    lateinit var getImageNoteUseCase: GetImageNoteUseCase
 
     val imageNotes = mutableListOf(
         ImageNote(
@@ -39,28 +39,28 @@ class GetImageNoteUseCaseTest {
     )
 
     @Before
-    fun initImageNoteFakeDataSource() {
-        imageNoteFakeDataSource = ImageNoteFakeDataSource(imageNotes)
+    fun initGetImageNoteUseCase() {
+        getImageNoteUseCase = GetImageNoteUseCase(ImageNoteFakeDataSource(imageNotes))
     }
 
     @Test
-    fun getTextNoteUseCaseTest_nonExistentNoteId_returnsNull() =
+    fun getImageNoteUseCase_nonExistentNoteId_returnsNull() =
         runTest {
             //Given - the fake data source and
             val noteId = -1
             //When
-            val note = imageNoteFakeDataSource.getImageNoteById(noteId)
+            val note = getImageNoteUseCase.invoke(noteId)
             //Then
             assertEquals(imageNotes.find { noteId == it.id }, note)
         }
 
     @Test
-    fun getTextNoteUseCaseTest_validNoteId_returnsNote() =
+    fun getImageNoteUseCase_validNoteId_returnsNote() =
         runTest {
             //Given - the fake data source and
             val noteId = 1
             //When
-            val note = imageNoteFakeDataSource.getImageNoteById(noteId)
+            val note = getImageNoteUseCase.invoke(noteId)
             //Then
             assertEquals(imageNotes.find { noteId == it.id }, note)
         }

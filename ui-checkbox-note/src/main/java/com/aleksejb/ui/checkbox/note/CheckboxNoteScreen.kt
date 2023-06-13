@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.aleksejb.core.domain.model.CheckboxItem
 import com.aleksejb.core.domain.model.CheckboxNote
 import com.aleksejb.core.ui.R
+import com.aleksejb.core.ui.components.BaseNoteScreen
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -43,15 +44,10 @@ private fun CheckboxNoteScreenContent(
     state: CheckboxNoteState,
     eventHandler: (CheckboxNoteEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding()
-            .statusBarsPadding()
-            .padding(horizontal = dimensionResource(id = R.dimen.medium_100))
+    BaseNoteScreen(
+        title = state.title,
+        onTitleChanged = { eventHandler(CheckboxNoteEvent.OnTitleChanged(it)) }
     ) {
-        TitleTextField(state, eventHandler)
-
         LazyColumn {
             items(state.items) { checkboxItem ->
                 CheckboxItem(

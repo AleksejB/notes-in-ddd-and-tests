@@ -32,7 +32,7 @@ class TextNoteDataSourceImpl(
         return textNoteDao.getNoteById(id)?.toTextNote()
     }
 
-    override suspend fun insertTextNote(textNote: TextNote): Long {
-        return textNoteDao.insert(textNote.toTextNoteEntity())
+    override suspend fun insertTextNote(textNote: TextNote) {
+        textNoteDao.insert(textNote.toTextNoteEntity())
     }
 }

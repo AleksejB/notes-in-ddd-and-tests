@@ -12,10 +12,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(JUnit4::class)
 class GetTextNoteUseCaseTest {
 
-    lateinit var textNoteDataFakeDataSource: TextNoteDataSource
+    lateinit var getTextNoteUseCase: GetTextNoteUseCase
 
     val textNotes = listOf(
         TextNote(
@@ -41,20 +42,17 @@ class GetTextNoteUseCaseTest {
     )
 
     @Before
-    fun initFakeDataSource() {
-        textNoteDataFakeDataSource = TextNoteFakeDataSource(
-            textNotes = textNotes
-        )
+    fun initGetTextNoteUseCase() {
+        getTextNoteUseCase = GetTextNoteUseCase(TextNoteFakeDataSource(textNotes))
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun getTextNoteUseCaseTest_nonExistentNoteId_returnsNull() =
         runTest {
             //Given - the fake data source and
             val noteId = -1
             //When
-            val note = textNoteDataFakeDataSource.getTextNoteById(noteId)
+            val note = getTextNoteUseCase.invoke(noteId)
             //Then
             assertEquals(null, note)
         }
@@ -65,7 +63,7 @@ class GetTextNoteUseCaseTest {
             //Given - the fake data source and
             val noteId = 1
             //When
-            val note = textNoteDataFakeDataSource.getTextNoteById(noteId)
+            val note = getTextNoteUseCase.invoke(noteId)
             //Then
             assertEquals(textNotes.find { it.id == noteId }, note)
         }

@@ -11,7 +11,7 @@ import com.aleksejb.core.data.database.entity.TextNoteEntity
 interface TextNoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(textNoteEntity: TextNoteEntity): Long
+    suspend fun insert(textNoteEntity: TextNoteEntity)
 
     @Query("SELECT * FROM text_note WHERE id = :id")
     suspend fun getNoteById(id: Int): TextNoteEntity?
