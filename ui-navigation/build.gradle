@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.plugin.android.lib)
     alias(libs.plugins.plugin.kotlin.android)
     alias(libs.plugins.plugin.kotlin.kapt)
+    alias(libs.plugins.plugin.compose.compiler)
     id("kotlin-parcelize")
 }
 
@@ -38,4 +39,6 @@ dependencies {
 
     implementation libs.bundles.androidx
     api libs.appyx
+
+    testImplementation(libs.testing.junit)
 }

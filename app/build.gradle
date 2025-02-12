@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.plugin.kotlin.android)
     alias(libs.plugins.plugin.kotlin.serialization)
     alias(libs.plugins.plugin.kotlin.kapt)
+    alias(libs.plugins.plugin.compose.compiler)
 
     id("kotlin-parcelize")
 }
@@ -39,9 +40,6 @@ android {
     }
     buildFeatures {
         compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.4.1'
     }
     packagingOptions {
         resources {

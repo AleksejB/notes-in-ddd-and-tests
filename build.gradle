@@ -10,4 +10,6 @@ plugins {
     alias(libs.plugins.plugin.kotlin.serialization) apply false
     alias(libs.plugins.plugin.android) apply false
     alias(libs.plugins.plugin.android.lib) apply false
+    alias(libs.plugins.plugin.compose.compiler) apply false
+    alias(libs.plugins.plugin.ksp) apply false
 }

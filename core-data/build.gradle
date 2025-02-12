@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.plugin.kotlin.android)
     alias(libs.plugins.plugin.kotlin.serialization)
     alias(libs.plugins.plugin.kotlin.kapt)
+    alias(libs.plugins.plugin.ksp)
 }
 
 android {
@@ -36,10 +37,12 @@ dependencies {
     implementation project(":core-domain")
 
     implementation libs.bundles.room
-    kapt libs.room.compiler
+    ksp libs.room.compiler
     implementation libs.room.ktx
 
     implementation libs.koin.android
+
+    testImplementation(libs.testing.junit)
 
     androidTestImplementation libs.testing.androidx.junit
     androidTestImplementation libs.testing.androidx.runner

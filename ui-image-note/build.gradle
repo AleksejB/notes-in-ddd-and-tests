@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.plugin.android.lib)
     alias(libs.plugins.plugin.kotlin.android)
     alias(libs.plugins.plugin.kotlin.kapt)
+    alias(libs.plugins.plugin.compose.compiler)
 }
 
 android {
@@ -29,9 +30,6 @@ android {
     buildFeatures {
         compose true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.4.1'
-    }
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -54,4 +52,6 @@ dependencies {
     implementation(libs.bundles.compose.ui)
 
     implementation libs.koin.compose
+
+    testImplementation(libs.testing.junit)
 }
