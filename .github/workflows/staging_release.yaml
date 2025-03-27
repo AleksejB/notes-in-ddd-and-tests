@@ -1,0 +1,66 @@
+name: Create Staging Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for the release (e.g., 1.2.3-rc1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+
+      # Step 1: Bump Version
+      - name: Bump Version
+        run: |
+          VERSION_FILE=app/version.properties
+          echo "version=${{ inputs.version }}" > $VERSION_FILE
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add $VERSION_FILE
+          git commit -m "Bump version to ${{ inputs.version }}"
+          git push origin HEAD
+
+#      # Step 2: Create GitHub Release with Tag and Name = Version
+#      - name: Create GitHub Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          tag_name: ${{ inputs.version }}
+#          name: Release ${{ inputs.version }}
+#          body: |
+#            ## Changes
+#            - Describe the changes in this release.
+#          draft: false
+#          prerelease: true
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#
+#      # Step 3: Build APKs
+#      - name: Build APKs
+#        run: ./gradlew yourCustomTaskName
+#
+#      # Step 4: Attach APKs to the Release
+#      - name: Upload APKs to Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          tag_name: ${{ inputs.version }}
+#          files: |
+#            app/build/outputs/apk/**/*.apk
+#          token: ${{ secrets.GITHUB_TOKEN }}
