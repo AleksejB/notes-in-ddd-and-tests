@@ -31,12 +31,23 @@ jobs:
       # Step 1: Bump Version
       - name: Bump Version
         run: |
-          VERSION_FILE=app/version.properties
-          echo "version=${{ inputs.version }}" > $VERSION_FILE
+          VERSION_FILE=version.properties
+          # Increment VERSION_CODE by 1
+          VERSION_CODE=$(grep -oP 'VERSION_CODE=\K\d+' $VERSION_FILE)
+          VERSION_CODE=$((VERSION_CODE + 1))
+
+          # Set VERSION_NAME to the supplied version
+          VERSION_NAME=${{ inputs.version }}
+
+          # Update the version.properties file
+          sed -i "s/^VERSION_CODE=\d\+/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE
+          sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
+
+          # Commit and push changes to version.properties
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           git add $VERSION_FILE
-          git commit -m "Bump version to ${{ inputs.version }}"
+          git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
           git push origin HEAD
 
 #      # Step 2: Create GitHub Release with Tag and Name = Version
