@@ -1,3 +1,6 @@
+import com.android.build.gradle.LibraryExtension
+import com.android.build.gradle.LibraryPlugin
+
 buildscript {
     ext {
         compose_version = '1.2.0'
@@ -13,3 +16,29 @@ plugins {
     alias(libs.plugins.plugin.compose.compiler) apply false
     alias(libs.plugins.plugin.ksp) apply false
 }
+
+subprojects {
+
+}
+
+//tasks.register("createStagingRelease") {
+//    group = "release"
+//    description = "Assemble all required APKs for staging release"
+//
+//    doLast {
+//        println("Starting to build APKs for staging release...")
+//
+//        // Build specific build variants
+//        exec {
+//            commandLine("./gradlew", "assembleStagingRelease") // Example variant
+//        }
+////        exec {
+////            commandLine("./gradlew", "assembleRelease") // Example variant
+////        }
+////        exec {
+////            commandLine("./gradlew", "assembleQa") // Example if you have a QA build
+////        }
+//
+//        println("APKs have been generated.")
+//    }
+//}

@@ -28,6 +28,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    flavorDimensions += "default"
+    productFlavors {
+        create("staging") {
+            dimension = "default"
+        }
+        create("uat") {
+            dimension = "default"
+        }
+        create("production") {
+            dimension = "default"
+        }
+    }
     kotlinOptions {
         jvmTarget = '1.8'
     }

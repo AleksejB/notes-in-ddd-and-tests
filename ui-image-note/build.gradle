@@ -30,6 +30,18 @@ android {
     buildFeatures {
         compose true
     }
+    flavorDimensions += "default"
+    productFlavors {
+        create("staging") {
+            dimension = "default"
+        }
+        create("uat") {
+            dimension = "default"
+        }
+        create("production") {
+            dimension = "default"
+        }
+    }
     kotlinOptions {
         jvmTarget = '1.8'
     }
