@@ -73,25 +73,21 @@ jobs:
           # Check if the version starts with 'v'
           if [[ "$VERSION" =~ ^v ]]; then
             # If it starts with 'v', use the version as is
-            echo "Version starts with v"
             TAG_NAME=$VERSION
             RELEASE_NAME=$VERSION
           else
             # If it doesn't start with 'v', append 'v' to the version
             TAG_NAME="v$VERSION"
             RELEASE_NAME="v$VERSION"
-            echo "Version does not start with v"
           fi
-          
-          # Check if the release exists by querying the GitHub API
-          RELEASE_EXISTS=$(curl -s \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME" \
-            | grep -o 'Not Found')
-          
-          echo "RELEASE_EXISTS=$RELEASE_EXISTS"
 
-          if [ "$RELEASE_EXISTS" == "Not Found" ]; then
+          # Check if the release exists by querying the GitHub API
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+
+          # Check if the HTTP response code is 404 (Not Found)
+          if [[ "$RESPONSE" == "404" ]]; then
             echo "Release not found. Creating release for version $TAG_NAME..."
 
             # Create GitHub Release with Tag and Name = Version
@@ -103,13 +99,14 @@ jobs:
                 "name": "'"$RELEASE_NAME"'",
                 "body": "## Changes\n- Describe the changes in this release.",
                 "draft": false,
-                "prerelease": true
+                "prerelease": false
               }' \
               "https://api.github.com/repos/${{ github.repository }}/releases"
 
           else
             echo "Release for version $TAG_NAME already exists. Skipping release creation."
           fi
+
 
 
 
