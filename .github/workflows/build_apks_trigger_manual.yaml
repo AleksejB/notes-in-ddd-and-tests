@@ -83,13 +83,13 @@ jobs:
             echo "Version does not start with v"
           fi
           
-          echo "Updated contents of $VERSION_FILE:"
-
           # Check if the release exists by querying the GitHub API
           RELEASE_EXISTS=$(curl -s \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME" \
             | grep -o 'Not Found')
+          
+          echo "RELEASE_EXISTS=$RELEASE_EXISTS"
 
           if [ "$RELEASE_EXISTS" == "Not Found" ]; then
             echo "Release not found. Creating release for version $TAG_NAME..."
