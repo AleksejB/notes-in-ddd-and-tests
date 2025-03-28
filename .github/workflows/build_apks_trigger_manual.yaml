@@ -73,13 +73,17 @@ jobs:
           # Check if the version starts with 'v'
           if [[ "$VERSION" =~ ^v ]]; then
             # If it starts with 'v', use the version as is
+            echo "Version starts with v"
             TAG_NAME=$VERSION
             RELEASE_NAME=$VERSION
           else
             # If it doesn't start with 'v', append 'v' to the version
             TAG_NAME="v$VERSION"
             RELEASE_NAME="v$VERSION"
+            echo "Version does not start with v"
           fi
+          
+          echo "Updated contents of $VERSION_FILE:"
 
           # Check if the release exists by querying the GitHub API
           RELEASE_EXISTS=$(curl -s \
