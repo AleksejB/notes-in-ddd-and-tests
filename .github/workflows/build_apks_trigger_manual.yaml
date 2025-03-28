@@ -46,11 +46,10 @@ jobs:
           echo "Setting VERSION_NAME to: $VERSION_NAME"
 
           # Update the version.properties file
-#          sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE
           sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE 
           sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
 
-#          Log the new contents of the version.properties file
+          # Log the new contents of the version.properties file
           echo "Updated contents of $VERSION_FILE:"
           cat $VERSION_FILE
 
