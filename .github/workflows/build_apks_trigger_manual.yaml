@@ -65,6 +65,36 @@ jobs:
           git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
           git push origin HEAD
 
+      # Step 2: Create GitHub Release with Tag and Name = Version if it doesn't already exist
+      - name: Check if release exists
+        run: |
+          VERSION=${{ inputs.version }}
+          RELEASE_EXISTS=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$VERSION" \
+            | grep -o 'Not Found')
+          
+          if [ "$RELEASE_EXISTS" == "Not Found" ]; then
+            echo "Release not found. Creating release for version $VERSION..."
+          
+            # Create GitHub Release with Tag and Name = Version
+            curl -s \
+              -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d '{
+                "tag_name": "'"$VERSION"'",
+                "name": "Release '"$VERSION"'",
+                "body": "## Changes\n- Describe the changes in this release.",
+                "draft": false,
+                "prerelease": false
+              }' \
+              "https://api.github.com/repos/${{ github.repository }}/releases"
+          
+          else
+            echo "Release for version $VERSION already exists. Skipping release creation."
+          fi
+
+
 #      # Step 2: Create GitHub Release with Tag and Name = Version
 #      - name: Create GitHub Release
 #        uses: softprops/action-gh-release@v2
