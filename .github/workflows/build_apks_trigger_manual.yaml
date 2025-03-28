@@ -43,6 +43,11 @@ jobs:
 
           # Set VERSION_NAME to the supplied version
           VERSION_NAME=${{ inputs.version }}
+
+          # If the version starts with a 'v', remove it
+          if [[ "$VERSION_NAME" == v* ]]; then
+            VERSION_NAME="${VERSION_NAME:1}"
+          fi
           echo "Setting VERSION_NAME to: $VERSION_NAME"
 
           # Update the version.properties file
