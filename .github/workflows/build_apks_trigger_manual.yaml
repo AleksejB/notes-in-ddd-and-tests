@@ -22,7 +22,6 @@ on:
         required: false
         type: boolean
         default: true
-  # Add release trigger
 
 permissions:
   contents: write
@@ -94,10 +93,6 @@ jobs:
 
           echo "TASKS=$TASKS" >> $GITHUB_ENV
 
-#      - name: Run Gradle Task
-#        uses: SoninApps/android_github_actions/.github/actions/run-gradle-task@main
-#        with:
-#          task: "${{ env.TASKS }}"
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
         id: cpu-cores
@@ -110,8 +105,6 @@ jobs:
         shell: bash
         id: test
         run: |
-#        ./gradlew testAndGenerateReport \ //TODO: make this run the input
-#        -Ptask=${{ inputs.task }} \
           ./gradlew ${{ env.TASKS }} \
           --no-daemon \
           --profile \
