@@ -106,7 +106,7 @@ jobs:
         shell: bash
         run: echo "workerCount=$(( ${{ steps.cpu-cores.outputs.count }} * 2 ))" >> $GITHUB_ENV
 
-      - name: Run unit tests
+      - name: Generate APKs
         shell: bash
         id: test
         run: |
