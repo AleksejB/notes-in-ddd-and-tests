@@ -126,9 +126,69 @@ jobs:
           APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd "," -)
           echo "APK_PATHS=$APK_PATHS" >> $GITHUB_ENV
 
-      - name: Create release if not exists and upload APKs
-        uses: SoninApps/android_github_actions/.github/actions/create-release-if-not-exists@main
-        with:
-          version: ${{ inputs.version }}
-          prerelease: ${{ inputs.prerelease }}
-          apk_paths: ${{ env.APK_PATHS }}
+      - name: Check if release exists
+        shell: bash
+        run: |
+          VERSION=${{ inputs.version }}
+
+          # Check if the version starts with 'v'
+          if [[ "$VERSION" =~ ^v ]]; then
+            TAG_NAME=$VERSION
+            RELEASE_NAME=$VERSION
+          else
+            TAG_NAME="v$VERSION"
+            RELEASE_NAME="v$VERSION"
+          fi
+
+          # Check if the release exists by querying the GitHub API
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+
+          if [[ "$RESPONSE" == "404" ]]; then
+            echo "Release not found. Creating release for version $TAG_NAME..."
+
+            # Create GitHub Release and store the response
+            RELEASE_RESPONSE=$(curl -s \
+              -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d '{
+                "tag_name": "'"$TAG_NAME"'",
+                "name": "'"$RELEASE_NAME"'",
+                "body": "## Changes\n- Describe the changes in this release.",
+                "draft": false,
+                "prerelease": '${{ inputs.prerelease }}'
+              }' \
+              "https://api.github.com/repos/${{ github.repository }}/releases")
+
+            # Extract release ID from response
+            RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
+          else
+            echo "Release for version $TAG_NAME already exists. Fetching ID..."
+            RELEASE_ID=$(jq -r '.id' response.json)
+          fi
+
+          echo "Release ID: $RELEASE_ID"
+
+          # Upload APKs if provided
+          if [[ -n "${{ inputs.apk_paths }}" ]]; then
+            IFS=',' read -r -a APK_ARRAY <<< "${{ inputs.apk_paths }}"
+
+            for APK in "${APK_ARRAY[@]}"; do
+              APK_PATH=$(echo $APK | xargs) # Trim spaces
+              FILENAME=$(basename "$APK_PATH")
+
+              echo "Uploading $FILENAME..."
+
+              curl -s \
+                -X POST \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Content-Type: application/vnd.android.package-archive" \
+                --data-binary @"$APK_PATH" \
+                "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
+
+              echo "$FILENAME uploaded successfully."
+            done
+          else
+            echo "No APK paths provided. Skipping upload."
+          fi
