@@ -38,7 +38,7 @@ jobs:
           echo "New VERSION_CODE: $VERSION_CODE"
 
           # Set VERSION_NAME to the supplied version
-          VERSION_NAME="${{ inputs.version }}"
+          VERSION_NAME="${{ github.event.release.tag_name }}"
 
           # If the version starts with a 'v', remove it
           if [[ "$VERSION_NAME" == v* ]]; then
@@ -121,7 +121,7 @@ jobs:
       - name: Check if release exists
         shell: bash
         run: |
-          VERSION=${{ inputs.version }}
+          VERSION=${{ github.event.release.tag_name }}
 
           # Check if the version starts with 'v'
           if [[ "$VERSION" =~ ^v ]]; then
@@ -149,7 +149,7 @@ jobs:
                 "name": "'"$RELEASE_NAME"'",
                 "body": "## Changes\n- Describe the changes in this release.",
                 "draft": false,
-                "prerelease": '${{ inputs.prerelease }}'
+                "prerelease": false
               }' \
               "https://api.github.com/repos/${{ github.repository }}/releases")
 
