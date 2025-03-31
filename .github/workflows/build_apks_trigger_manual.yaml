@@ -107,8 +107,8 @@ jobs:
         shell: bash
         id: test
         run: |
-          TASKS=${{env.TASKS}}
-          echo "env.TASKS: $TASKS"
+          echo "Running Gradle tasks: ${{ env.TASKS }}"
+          
           ./gradlew ${{ env.TASKS }} \
           --no-daemon \
           --profile \
