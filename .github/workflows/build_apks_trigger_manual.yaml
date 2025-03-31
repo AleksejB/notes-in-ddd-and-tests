@@ -7,6 +7,22 @@ on:
         description: 'Version for the release (e.g., 1.2.3-rc1)'
         required: true
         type: string
+      product_flavour:
+        description: 'Comma-separated list of product flavours for the APK (e.g., staging,production)'
+        required: false
+        type: string
+        default: 'staging'
+      build_type:
+        description: 'Build type for the APK (e.g., Release, Debug)'
+        required: false
+        type: string
+        default: 'release'
+      prerelease:
+        description: 'Is this a pre release?'
+        required: false
+        type: boolean
+        default: true
+  # Add release trigger
 
 permissions:
   contents: write
@@ -25,7 +41,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Step 1: Bump Version
       - name: Bump Version
         run: |
           VERSION_FILE=version.properties
@@ -42,7 +57,7 @@ jobs:
           echo "New VERSION_CODE: $VERSION_CODE"
 
           # Set VERSION_NAME to the supplied version
-          VERSION_NAME=${{ inputs.version }}
+          VERSION_NAME="${{ inputs.version }}"
 
           # If the version starts with a 'v', remove it
           if [[ "$VERSION_NAME" == v* ]]; then
@@ -65,73 +80,62 @@ jobs:
           git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
           git push origin HEAD
 
-      # Step 2: Create GitHub Release with Tag and Name = Version if it doesn't already exist
-      - name: Check if release exists
+      - name: Generate commands to generate APKs
         run: |
-          VERSION=${{ inputs.version }}
+          PRODUCT_FLAVORS="${{ inputs.product_flavour }}"
+          BUILD_TYPES="${{ inputs.build_type }}"
 
-          # Check if the version starts with 'v'
-          if [[ "$VERSION" =~ ^v ]]; then
-            # If it starts with 'v', use the version as is
-            TAG_NAME=$VERSION
-            RELEASE_NAME=$VERSION
-          else
-            # If it doesn't start with 'v', append 'v' to the version
-            TAG_NAME="v$VERSION"
-            RELEASE_NAME="v$VERSION"
-          fi
+          TASKS=""
+          for FLAVOR in $(echo $PRODUCT_FLAVORS | tr ',' ' '); do
+            for TYPE in $(echo $BUILD_TYPES | tr ',' ' '); do
+              TASKS="$TASKS assemble$(echo $FLAVOR | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')$(echo $TYPE | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
+            done
+          done
 
-          # Check if the release exists by querying the GitHub API
-          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+          echo "TASKS=$TASKS" >> $GITHUB_ENV
 
-          # Check if the HTTP response code is 404 (Not Found)
-          if [[ "$RESPONSE" == "404" ]]; then
-            echo "Release not found. Creating release for version $TAG_NAME..."
-
-            # Create GitHub Release with Tag and Name = Version
-            curl -s \
-              -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -d '{
-                "tag_name": "'"$TAG_NAME"'",
-                "name": "'"$RELEASE_NAME"'",
-                "body": "## Changes\n- Describe the changes in this release.",
-                "draft": false,
-                "prerelease": true
-              }' \
-              "https://api.github.com/repos/${{ github.repository }}/releases"
-
-          else
-            echo "Release for version $TAG_NAME already exists. Skipping release creation."
-          fi
-
-
-
-
-#      # Step 2: Create GitHub Release with Tag and Name = Version
-#      - name: Create GitHub Release
-#        uses: softprops/action-gh-release@v2
+#      - name: Run Gradle Task
+#        uses: SoninApps/android_github_actions/.github/actions/run-gradle-task@main
 #        with:
-#          tag_name: ${{ inputs.version }}
-#          name: Release ${{ inputs.version }}
-#          body: |
-#            ## Changes
-#            - Describe the changes in this release.
-#          draft: false
-#          prerelease: true
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#
-#      # Step 3: Build APKs
-#      - name: Build APKs
-#        run: ./gradlew yourCustomTaskName
-#
-#      # Step 4: Attach APKs to the Release
-#      - name: Upload APKs to Release
-#        uses: softprops/action-gh-release@v2
-#        with:
-#          tag_name: ${{ inputs.version }}
-#          files: |
-#            app/build/outputs/apk/**/*.apk
-#          token: ${{ secrets.GITHUB_TOKEN }}
+#          task: "${{ env.TASKS }}"
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
+
+      - name: Calculate worker count
+        shell: bash
+        run: echo "workerCount=$(( ${{ steps.cpu-cores.outputs.count }} * 2 ))" >> $GITHUB_ENV
+
+      - name: Run unit tests
+        shell: bash
+        id: test
+        run: |
+#        ./gradlew testAndGenerateReport \ //TODO: make this run the input
+#        -Ptask=${{ inputs.task }} \
+          ./gradlew ${{ env.TASKS }} \
+          --no-daemon \
+          --profile \
+          -Dorg.gradle.daemon.idletimeout=15000 \
+          -Dorg.gradle.workers.max=${{ env.workerCount }} \
+          --stacktrace \
+          --configuration-cache
+
+      - name: Upload build reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: build/reports
+
+      - name: Find Generated APKs
+        id: find-apks
+        run: |
+          APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd "," -)
+          echo "APK_PATHS=$APK_PATHS" >> $GITHUB_ENV
+
+      - name: Create release if not exists and upload APKs
+        uses: SoninApps/android_github_actions/.github/actions/create-release-if-not-exists@main
+        with:
+          version: ${{ inputs.version }}
+          prerelease: ${{ inputs.prerelease }}
+          apk_paths: ${{ env.APK_PATHS }}
