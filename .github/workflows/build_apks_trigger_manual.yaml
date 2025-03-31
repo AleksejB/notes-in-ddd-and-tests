@@ -128,6 +128,7 @@ jobs:
         id: find-apks
         run: |
           APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd ",")
+          echo "APK_PATHS=$APK_PATHS"
           echo "APK_PATHS=${APK_PATHS}" >> $GITHUB_ENV
 
       - name: Check if release exists
@@ -175,8 +176,8 @@ jobs:
           echo "Release ID: $RELEASE_ID"
 
           # Upload APKs if provided
-          if [[ -n "${{ inputs.apk_paths }}" ]]; then
-            IFS=',' read -r -a APK_ARRAY <<< "${{ inputs.apk_paths }}"
+          if [[ -n "${{ env.APK_PATHS }}" ]]; then
+            IFS=',' read -r -a APK_ARRAY <<< "${{ env.APK_PATHS }}"
 
             for APK in "${APK_ARRAY[@]}"; do
               APK_PATH=$(echo $APK | xargs) # Trim spaces
