@@ -123,8 +123,8 @@ jobs:
       - name: Find Generated APKs
         id: find-apks
         run: |
-          APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd "," -)
-          echo "APK_PATHS=$APK_PATHS" >> $GITHUB_ENV
+          APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd ",")
+          echo "APK_PATHS=${APK_PATHS}" >> $GITHUB_ENV
 
       - name: Check if release exists
         shell: bash
