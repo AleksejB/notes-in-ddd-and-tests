@@ -58,7 +58,7 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git add $VERSION_FILE
           git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
-          git push origin HEAD:refs/heads/main  # Replace "main" with your default branch name
+          git push origin HEAD:refs/heads/master  # Replace "main" with your default branch name
 
 
       - name: Generate commands to generate APKs
@@ -66,6 +66,7 @@ jobs:
           RELEASE_NAME="${{ github.event.release.name }}"
 
           # Extract version, product flavours, and build types
+          VERSION=$(echo "$RELEASE_NAME" | awk -F' | ' '{print $1}')
           PRODUCT_FLAVORS=$(echo "$RELEASE_NAME" | awk -F' | ' '{print $2}')
           BUILD_TYPES=$(echo "$RELEASE_NAME" | awk -F' | ' '{print $3}')
 
