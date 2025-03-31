@@ -13,10 +13,13 @@ on:
         type: string
         default: 'staging'
       build_type:
-        description: 'Build type for the APK (e.g., Release, Debug)'
-        required: false
-        type: string
-        default: 'release'
+        description: 'Select the build type'
+        required: true
+        type: choice
+        options:
+          - release
+          - debug
+          - release,debug
       prerelease:
         description: 'Is this a pre release?'
         required: false
