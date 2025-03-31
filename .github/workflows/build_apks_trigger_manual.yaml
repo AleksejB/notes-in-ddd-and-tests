@@ -91,7 +91,9 @@ jobs:
             done
           done
 
+          echo "tasks: $TASKS"
           echo "TASKS=$TASKS" >> $GITHUB_ENV
+          
 
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v2
