@@ -231,7 +231,7 @@ on:
 
 jobs:
   deploy:
-    uses: SoninApps/android_github_actions/.github/workflows/build-apks-trigger-manual-v1.yml@main
+    uses: SoninApps/android_github_actions/.github/workflows/build-apks-trigger-manual-v1.yml@build-apks-workflow
     with:
       version: ${{ inputs.version }}
       product_flavour: ${{ inputs.product_flavour }}
