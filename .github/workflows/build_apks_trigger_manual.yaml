@@ -1,4 +1,207 @@
-name: Create Release
+#name: Create Release
+#
+#on:
+#  workflow_dispatch:
+#    inputs:
+#      version:
+#        description: 'Version for the release (e.g., 1.2.3-rc1)'
+#        required: true
+#        type: string
+#      product_flavour:
+#        description: 'Comma-separated list of product flavours for the APK (e.g., staging,production)'
+#        required: false
+#        type: string
+#        default: 'staging'
+#      build_type:
+#        description: 'Select the build type'
+#        required: true
+#        type: choice
+#        options:
+#          - release
+#          - debug
+#          - release,debug
+#      prerelease:
+#        description: 'Is this a pre release?'
+#        required: false
+#        type: boolean
+#        default: true
+#
+#permissions:
+#  contents: write
+#
+#jobs:
+#  release:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#
+#      - name: Bump Version
+#        run: |
+#          VERSION_FILE=version.properties
+#
+#          # Log the file contents before modifying
+#          echo "Current contents of $VERSION_FILE:"
+#          cat $VERSION_FILE
+#
+#          # Increment VERSION_CODE by 1
+#          VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
+#          echo "Current VERSION_CODE: $VERSION_CODE"
+#
+#          VERSION_CODE=$((VERSION_CODE + 1))
+#          echo "New VERSION_CODE: $VERSION_CODE"
+#
+#          # Set VERSION_NAME to the supplied version
+#          VERSION_NAME="${{ inputs.version }}"
+#
+#          # If the version starts with a 'v', remove it
+#          if [[ "$VERSION_NAME" == v* ]]; then
+#            VERSION_NAME="${VERSION_NAME:1}"
+#          fi
+#          echo "Setting VERSION_NAME to: $VERSION_NAME"
+#
+#          # Update the version.properties file
+#          sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE
+#          sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
+#
+#          # Log the new contents of the version.properties file
+#          echo "Updated contents of $VERSION_FILE:"
+#          cat $VERSION_FILE
+#
+#          # Commit and push changes to version.properties
+#          git config --global user.name "github-actions"
+#          git config --global user.email "github-actions@github.com"
+#          git add $VERSION_FILE
+#          git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
+#          git push origin HEAD
+#
+#      - name: Generate commands to generate APKs
+#        run: |
+#          PRODUCT_FLAVORS="${{ inputs.product_flavour }}"
+#          BUILD_TYPES="${{ inputs.build_type }}"
+#
+#          TASKS=""
+#          for FLAVOR in $(echo $PRODUCT_FLAVORS | tr ',' ' '); do
+#            for TYPE in $(echo $BUILD_TYPES | tr ',' ' '); do
+#              TASKS="$TASKS assemble$(echo $FLAVOR | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')$(echo $TYPE | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
+#            done
+#          done
+#
+#          echo "tasks: $TASKS"
+#          echo "TASKS=$TASKS" >> $GITHUB_ENV
+#
+#
+#      - name: Get number of CPU cores
+#        uses: SimenB/github-actions-cpu-cores@v2
+#        id: cpu-cores
+#
+#      - name: Calculate worker count
+#        shell: bash
+#        run: echo "workerCount=$(( ${{ steps.cpu-cores.outputs.count }} * 2 ))" >> $GITHUB_ENV
+#
+#      - name: Generate APKs
+#        shell: bash
+#        id: test
+#        run: |
+#          echo "Running Gradle tasks: ${{ env.TASKS }}"
+#
+#          ./gradlew ${{ env.TASKS }} \
+#          --no-daemon \
+#          --profile \
+#          -Dorg.gradle.daemon.idletimeout=15000 \
+#          -Dorg.gradle.workers.max=${{ env.workerCount }} \
+#          --stacktrace \
+#          --configuration-cache
+#
+#      - name: Upload build reports
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: build-reports
+#          path: build/reports
+#
+#      - name: Find Generated APKs
+#        id: find-apks
+#        run: |
+#          APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd ",")
+#          echo "APK_PATHS=$APK_PATHS"
+#          echo "APK_PATHS=${APK_PATHS}" >> $GITHUB_ENV
+#
+#      - name: Check if release exists
+#        shell: bash
+#        run: |
+#          VERSION=${{ inputs.version }}
+#
+#          # Check if the version starts with 'v'
+#          if [[ "$VERSION" =~ ^v ]]; then
+#            TAG_NAME=$VERSION
+#            RELEASE_NAME=$VERSION
+#          else
+#            TAG_NAME="v$VERSION"
+#            RELEASE_NAME="v$VERSION"
+#          fi
+#
+#          # Check if the release exists by querying the GitHub API
+#          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+#            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+#            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+#
+#          if [[ "$RESPONSE" == "404" ]]; then
+#            echo "Release not found. Creating release for version $TAG_NAME..."
+#
+#            # Create GitHub Release and store the response
+#            RELEASE_RESPONSE=$(curl -s \
+#              -X POST \
+#              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+#              -d '{
+#                "tag_name": "'"$TAG_NAME"'",
+#                "name": "'"$RELEASE_NAME"'",
+#                "body": "## Changes\n- Describe the changes in this release.",
+#                "draft": false,
+#                "prerelease": '${{ inputs.prerelease }}'
+#              }' \
+#              "https://api.github.com/repos/${{ github.repository }}/releases")
+#
+#            # Extract release ID from response
+#            RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
+#          else
+#            echo "Release for version $TAG_NAME already exists. Fetching ID..."
+#            RELEASE_ID=$(jq -r '.id' response.json)
+#          fi
+#
+#          echo "Release ID: $RELEASE_ID"
+#
+#          # Upload APKs if provided
+#          if [[ -n "${{ env.APK_PATHS }}" ]]; then
+#            IFS=',' read -r -a APK_ARRAY <<< "${{ env.APK_PATHS }}"
+#
+#            for APK in "${APK_ARRAY[@]}"; do
+#              APK_PATH=$(echo $APK | xargs) # Trim spaces
+#              FILENAME=$(basename "$APK_PATH")
+#
+#              echo "Uploading $FILENAME..."
+#
+#              curl -s \
+#                -X POST \
+#                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+#                -H "Content-Type: application/vnd.android.package-archive" \
+#                --data-binary @"$APK_PATH" \
+#                "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
+#
+#              echo "$FILENAME uploaded successfully."
+#            done
+#          else
+#            echo "No APK paths provided. Skipping upload."
+#          fi
+
+name: Call Deployment Workflow
 
 on:
   workflow_dispatch:
@@ -26,177 +229,12 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: write
-
 jobs:
-  release:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Bump Version
-        run: |
-          VERSION_FILE=version.properties
-
-          # Log the file contents before modifying
-          echo "Current contents of $VERSION_FILE:"
-          cat $VERSION_FILE
-
-          # Increment VERSION_CODE by 1
-          VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
-          echo "Current VERSION_CODE: $VERSION_CODE"
-
-          VERSION_CODE=$((VERSION_CODE + 1))
-          echo "New VERSION_CODE: $VERSION_CODE"
-
-          # Set VERSION_NAME to the supplied version
-          VERSION_NAME="${{ inputs.version }}"
-
-          # If the version starts with a 'v', remove it
-          if [[ "$VERSION_NAME" == v* ]]; then
-            VERSION_NAME="${VERSION_NAME:1}"
-          fi
-          echo "Setting VERSION_NAME to: $VERSION_NAME"
-
-          # Update the version.properties file
-          sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE 
-          sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
-
-          # Log the new contents of the version.properties file
-          echo "Updated contents of $VERSION_FILE:"
-          cat $VERSION_FILE
-
-          # Commit and push changes to version.properties
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add $VERSION_FILE
-          git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
-          git push origin HEAD
-
-      - name: Generate commands to generate APKs
-        run: |
-          PRODUCT_FLAVORS="${{ inputs.product_flavour }}"
-          BUILD_TYPES="${{ inputs.build_type }}"
-
-          TASKS=""
-          for FLAVOR in $(echo $PRODUCT_FLAVORS | tr ',' ' '); do
-            for TYPE in $(echo $BUILD_TYPES | tr ',' ' '); do
-              TASKS="$TASKS assemble$(echo $FLAVOR | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')$(echo $TYPE | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
-            done
-          done
-
-          echo "tasks: $TASKS"
-          echo "TASKS=$TASKS" >> $GITHUB_ENV
-          
-
-      - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v2
-        id: cpu-cores
-
-      - name: Calculate worker count
-        shell: bash
-        run: echo "workerCount=$(( ${{ steps.cpu-cores.outputs.count }} * 2 ))" >> $GITHUB_ENV
-
-      - name: Generate APKs
-        shell: bash
-        id: test
-        run: |
-          echo "Running Gradle tasks: ${{ env.TASKS }}"
-          
-          ./gradlew ${{ env.TASKS }} \
-          --no-daemon \
-          --profile \
-          -Dorg.gradle.daemon.idletimeout=15000 \
-          -Dorg.gradle.workers.max=${{ env.workerCount }} \
-          --stacktrace \
-          --configuration-cache
-
-      - name: Upload build reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-reports
-          path: build/reports
-
-      - name: Find Generated APKs
-        id: find-apks
-        run: |
-          APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd ",")
-          echo "APK_PATHS=$APK_PATHS"
-          echo "APK_PATHS=${APK_PATHS}" >> $GITHUB_ENV
-
-      - name: Check if release exists
-        shell: bash
-        run: |
-          VERSION=${{ inputs.version }}
-
-          # Check if the version starts with 'v'
-          if [[ "$VERSION" =~ ^v ]]; then
-            TAG_NAME=$VERSION
-            RELEASE_NAME=$VERSION
-          else
-            TAG_NAME="v$VERSION"
-            RELEASE_NAME="v$VERSION"
-          fi
-
-          # Check if the release exists by querying the GitHub API
-          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
-
-          if [[ "$RESPONSE" == "404" ]]; then
-            echo "Release not found. Creating release for version $TAG_NAME..."
-
-            # Create GitHub Release and store the response
-            RELEASE_RESPONSE=$(curl -s \
-              -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -d '{
-                "tag_name": "'"$TAG_NAME"'",
-                "name": "'"$RELEASE_NAME"'",
-                "body": "## Changes\n- Describe the changes in this release.",
-                "draft": false,
-                "prerelease": '${{ inputs.prerelease }}'
-              }' \
-              "https://api.github.com/repos/${{ github.repository }}/releases")
-
-            # Extract release ID from response
-            RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
-          else
-            echo "Release for version $TAG_NAME already exists. Fetching ID..."
-            RELEASE_ID=$(jq -r '.id' response.json)
-          fi
-
-          echo "Release ID: $RELEASE_ID"
-
-          # Upload APKs if provided
-          if [[ -n "${{ env.APK_PATHS }}" ]]; then
-            IFS=',' read -r -a APK_ARRAY <<< "${{ env.APK_PATHS }}"
-
-            for APK in "${APK_ARRAY[@]}"; do
-              APK_PATH=$(echo $APK | xargs) # Trim spaces
-              FILENAME=$(basename "$APK_PATH")
-
-              echo "Uploading $FILENAME..."
-
-              curl -s \
-                -X POST \
-                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Content-Type: application/vnd.android.package-archive" \
-                --data-binary @"$APK_PATH" \
-                "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
-
-              echo "$FILENAME uploaded successfully."
-            done
-          else
-            echo "No APK paths provided. Skipping upload."
-          fi
+  deploy:
+    uses: SoninApps/android_github_actions/.github/workflows/build-apks-trigger-manual-v1.yml@main
+    with:
+      version: ${{ inputs.version }}
+      product_flavour: ${{ inputs.product_flavour }}
+      build_type: ${{ inputs.build_type }}
+      prerelease: ${{ inputs.prerelease }}
+    secrets: inherit
