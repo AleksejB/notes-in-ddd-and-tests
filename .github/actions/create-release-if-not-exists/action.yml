@@ -49,7 +49,11 @@ runs:
         else
           TAG_NAME="v$VERSION"
         fi
+        
+        echo "TAG_NAME=$TAG_NAME"
 
+        GIT_TAG = git tag
+        echo "GIT_TAG=$GIT_TAG"
         # Get the previous tag by date (ignoring alpha/beta/rc versions)
         PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
         
