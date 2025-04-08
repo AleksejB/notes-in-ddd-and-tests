@@ -5,6 +5,27 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+def ghproperties = new Properties()
+def ghsecretsFile = file("github.properties")
+if (ghsecretsFile.exists()) {
+    ghsecretsFile.withInputStream {
+        ghproperties.load(it)
+    }
+} else {
+    throw new GradleException("Missing github.properties file")
+}
+
+def properties = new Properties()
+def secretsFile = file("map.properties")
+if (secretsFile.exists()) {
+    secretsFile.withInputStream {
+        properties.load(it)
+    }
+} else {
+    throw new GradleException("Missing map.properties file")
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
