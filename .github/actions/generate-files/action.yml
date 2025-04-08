@@ -1,0 +1,35 @@
+name: Generate files
+description: Generate multiple files from name=content lines
+inputs:
+  files:
+    description: Multiline string of lines like "filename=content"
+    required: false
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Generate files from name=content input
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.files }}" ]; then
+          echo "No file definitions provided. Skipping file generation."
+          exit 0
+        fi
+
+        echo "Generating files..."
+
+        while IFS= read -r line; do
+          # Skip empty lines
+          [ -z "$line" ] && continue
+
+          # Split into file name and content (first '=' only)
+          filename="${line%%=*}"
+          content="${line#*=}"
+
+          echo "Creating file: $filename"
+          echo -e "$content" > "$filename"
+          echo "Contents of $filename:"
+          cat "$filename"
+          echo ""
+        done <<< "${{ inputs.files }}"

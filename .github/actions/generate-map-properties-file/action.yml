@@ -1,0 +1,27 @@
+name: Generates map.properties
+description: Generate map.properties file
+
+inputs:
+  map_token:
+    description: 'Maps token'
+    required: false
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Log skipping message
+      if: inputs.map_token == ''
+      shell: bash
+      run: echo "Skipping map.properties generation — no token provided."
+
+    - name: Log running message
+      if: inputs.map_token != ''
+      shell: bash
+      run: echo "Generating map.properties — token detected."
+
+    - name: Generate map.properties
+      if: inputs.map_token != ''
+      shell: bash
+      run: |
+        echo "MAPS_API_KEY=${{ inputs.map_token }}" > map.properties

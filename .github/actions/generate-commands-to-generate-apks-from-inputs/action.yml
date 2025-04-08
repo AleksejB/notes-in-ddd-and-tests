@@ -1,0 +1,30 @@
+name: Generate commands to generate APKs
+description: generates commands to assemble based on product flavours and build types
+
+inputs:
+  product_flavour:
+    description: 'Comma-separated list of product flavours for the APK (e.g., staging,production)'
+    required: false
+    type: string
+  build_type:
+    description: 'Select the build type'
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Generate commands to generate APKs
+      run: |
+        PRODUCT_FLAVORS="${{ inputs.product_flavour }}"
+        BUILD_TYPES="${{ inputs.build_type }}"
+
+        TASKS=""
+        for FLAVOR in $(echo $PRODUCT_FLAVORS | tr ',' ' '); do
+          for TYPE in $(echo $BUILD_TYPES | tr ',' ' '); do
+            TASKS="$TASKS assemble$(echo $FLAVOR | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')$(echo $TYPE | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
+          done
+        done
+
+        echo "TASKS=$TASKS" >> $GITHUB_ENV
+      shell: bash

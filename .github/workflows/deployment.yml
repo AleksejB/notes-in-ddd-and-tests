@@ -1,0 +1,39 @@
+name: Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for the release (e.g., 1.2.3-rc1)'
+        required: true
+        type: string
+      product_flavour:
+        description: 'Comma-separated list of product flavours for the APK (e.g., staging,production)'
+        required: false
+        type: string
+        default: 'staging'
+      build_type:
+        description: 'Select the build type'
+        required: true
+        type: choice
+        options:
+          - release
+          - debug
+          - release,debug
+      prerelease:
+        description: 'Is this a pre release?'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    uses: AleksejB/notes-in-ddd-and-tests/.github/workflows/build-apks-trigger-manual-v1.yml@main
+    with:
+      version: ${{ inputs.version }}
+      product_flavour: ${{ inputs.product_flavour }}
+      build_type: ${{ inputs.build_type }}
+      prerelease: ${{ inputs.prerelease }}
+      files: | 
+        github.properties=github.username=\SoninApps\ngithub.password=\${{ secrets.ANDROID_PAT }}\ngithub.repo.name=GithubPackages\ngithub.repo.url=https://maven.pkg.github.com/SoninApps/android-component-library
+        map.properties=MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}

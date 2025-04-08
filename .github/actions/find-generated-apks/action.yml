@@ -1,0 +1,11 @@
+name: Create release if not exists and attach APKs
+description: Create a release on GH if there is no release found with the same name and attach APKs
+
+runs:
+  using: composite
+  steps:
+    - name: Check if release exists
+      shell: bash
+      run: |
+        APK_PATHS=$(find app/build/outputs/apk -name "*.apk" | paste -sd "," -)
+        echo "APK_PATHS=$APK_PATHS" >> $GITHUB_ENV

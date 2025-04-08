@@ -1,0 +1,82 @@
+name: Deployment
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      product_flavour:
+        required: false
+        type: string
+        default: 'staging'
+      build_type:
+        required: true
+        type: string
+      prerelease:
+        required: false
+        type: boolean
+        default: true
+      files:
+        description: Multiline string of lines like "filename=content"
+        required: false
+        type: string
+
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Bump Version
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version@main
+        with:
+          version: ${{ inputs.version }}
+          token: ${{ secrets.ANDROID_PAT }}
+
+      - name: Generate commands to generate APKs
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-inputs@main
+        with:
+          product_flavour: ${{ inputs.product_flavour }}
+          build_type: ${{ inputs.build_type }}
+
+      - name: Generate files
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-files@main
+        with:
+          files: ${{ inputs.files }}
+
+      - name: Run Gradle Task
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/run-gradle-task@main
+        with:
+          task: "${{ env.TASKS }}"
+
+      - name: Find Generated APKs
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/find-generated-apks@main
+
+      - name: Create release if not exists and upload APKs
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/create-release-if-not-exists@main
+        with:
+          version: ${{ inputs.version }}
+          prerelease: ${{ inputs.prerelease }}
+          apk_paths: ${{ env.APK_PATHS }}
+          product_flavours: ${{ inputs.product_flavour }}
+          build_types: ${{ inputs.build_type }}
+          token: ${{ secrets.ANDROID_PAT }}
+
+      - name: Notify slack
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ""
+          notification_title: "New release, version: ${{ inputs.version }}"
