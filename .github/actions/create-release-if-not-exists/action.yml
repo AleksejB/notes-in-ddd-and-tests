@@ -33,6 +33,7 @@ runs:
     - name: Check if release exists
       shell: bash
       run: |
+        echo "Starting: Check if release exists"
         VERSION=${{ inputs.version }}
         PRODUCT_FLAVOURS=${{ inputs.product_flavours }}
         BUILD_TYPES=${{ inputs.build_types }}
