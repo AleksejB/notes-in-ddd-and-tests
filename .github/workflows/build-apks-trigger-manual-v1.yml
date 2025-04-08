@@ -44,7 +44,7 @@ jobs:
         uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version@master
         with:
           version: ${{ inputs.version }}
-          token: ${{ secrets.ANDROID_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate commands to generate APKs
         uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-inputs@master
@@ -73,7 +73,7 @@ jobs:
           apk_paths: ${{ env.APK_PATHS }}
           product_flavours: ${{ inputs.product_flavour }}
           build_types: ${{ inputs.build_type }}
-          token: ${{ secrets.ANDROID_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify slack
         uses: ravsamhq/notify-slack-action@v2
