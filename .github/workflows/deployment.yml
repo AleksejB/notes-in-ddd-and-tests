@@ -28,7 +28,7 @@ on:
 
 jobs:
   deploy:
-    uses: AleksejB/notes-in-ddd-and-tests/.github/workflows/build-apks-trigger-manual-v1.yml@main
+    uses: AleksejB/notes-in-ddd-and-tests/.github/workflows/build-apks-trigger-manual-v1.yml@master
     with:
       version: ${{ inputs.version }}
       product_flavour: ${{ inputs.product_flavour }}

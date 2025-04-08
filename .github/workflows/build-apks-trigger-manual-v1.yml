@@ -41,32 +41,32 @@ jobs:
           java-version: '17'
 
       - name: Bump Version
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version@main
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version@master
         with:
           version: ${{ inputs.version }}
           token: ${{ secrets.ANDROID_PAT }}
 
       - name: Generate commands to generate APKs
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-inputs@main
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-inputs@master
         with:
           product_flavour: ${{ inputs.product_flavour }}
           build_type: ${{ inputs.build_type }}
 
       - name: Generate files
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-files@main
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-files@master
         with:
           files: ${{ inputs.files }}
 
       - name: Run Gradle Task
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/run-gradle-task@main
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/run-gradle-task@master
         with:
           task: "${{ env.TASKS }}"
 
       - name: Find Generated APKs
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/find-generated-apks@main
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/find-generated-apks@master
 
       - name: Create release if not exists and upload APKs
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/create-release-if-not-exists@main
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/create-release-if-not-exists@master
         with:
           version: ${{ inputs.version }}
           prerelease: ${{ inputs.prerelease }}
