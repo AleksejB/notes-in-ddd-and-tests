@@ -35,5 +35,5 @@ jobs:
       build_type: ${{ inputs.build_type }}
       prerelease: ${{ inputs.prerelease }}
       files: | 
-        github.properties=github.username=\SoninApps\ngithub.password=\${{ secrets.ANDROID_PAT }}\ngithub.repo.name=GithubPackages\ngithub.repo.url=https://maven.pkg.github.com/SoninApps/android-component-library
-        map.properties=MAPS_API_KEY=${{ secrets.MAPS_API_KEY }}
+        github.properties=github.username=\SoninApps\ngithub.password=asdasd\\ngithub.repo.name=GithubPackages\ngithub.repo.url=https://maven.pkg.github.com/SoninApps/android-component-library
+        map.properties=MAPS_API_KEY=asdasd
