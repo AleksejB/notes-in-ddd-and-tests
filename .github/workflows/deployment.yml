@@ -10,10 +10,7 @@ jobs:
   deploy:
     uses: AleksejB/notes-in-ddd-and-tests/.github/workflows/build-apks-trigger-manual-v1.yml@master
     with:
-      version: ${{ inputs.version }}
-      product_flavour: ${{ inputs.product_flavour }}
-      build_type: ${{ inputs.build_type }}
-      prerelease: ${{ inputs.prerelease }}
+      tasks:
+        "assembleStagingRelease, assembleUatRelease"
       files: | 
-        github.properties=github.username=\SoninApps\ngithub.password=asdasd\\ngithub.repo.name=GithubPackages\ngithub.repo.url=https://maven.pkg.github.com/SoninApps/android-component-library
         map.properties=MAPS_API_KEY=asdasd

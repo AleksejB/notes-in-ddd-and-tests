@@ -3,13 +3,10 @@ name: Trigger manual
 on:
   workflow_call:
     inputs:
-      version:
-        required: true
-        type: string
       tasks:
         required: false
         type: string
-        default: 'assembleStagingRelease, assembleUatRelease'
+        default: "assembleStagingRelease, assembleUatRelease"
       files:
         description: Multiline string of lines like "filename=content"
         required: false
