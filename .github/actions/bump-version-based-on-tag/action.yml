@@ -1,0 +1,95 @@
+name: Bump version
+description: Bumps version name and code inside of version.properties
+
+inputs:
+  token:
+    description: 'Github token'
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Bump Version
+      shell: bash
+      run: |
+        VERSION_FILE=version.properties
+
+        # Get the tag name (e.g., refs/tags/v1.2.3 -> v1.2.3)
+        RAW_TAG=${GITHUB_REF#refs/tags/}
+        echo "Tag that triggered the workflow: $RAW_TAG"
+
+        # Strip leading 'v' if it exists
+        if [[ "$RAW_TAG" == v* ]]; then
+          VERSION_NAME="${RAW_TAG:1}"
+        else
+          VERSION_NAME="$RAW_TAG"
+        fi
+        echo "Parsed VERSION_NAME: $VERSION_NAME"
+
+        # Log the file contents before modifying
+        echo "Current contents of $VERSION_FILE:"
+        cat $VERSION_FILE
+
+        # Increment VERSION_CODE by 1
+        VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
+        echo "Current VERSION_CODE: $VERSION_CODE"
+
+        VERSION_CODE=$((VERSION_CODE + 1))
+        echo "New VERSION_CODE: $VERSION_CODE"
+
+        # Update the version.properties file
+        sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE 
+        sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
+
+        # Log the new contents of the version.properties file
+        echo "Updated contents of $VERSION_FILE:"
+        cat $VERSION_FILE
+
+        # Commit and push changes to version.properties
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add $VERSION_FILE
+        git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
+        
+        git remote set-url origin https://x-access-token:${{ inputs.token }}@github.com/${{ github.repository }}
+        git push origin HEAD
+
+#        VERSION_FILE=version.properties
+#
+#        # Log the file contents before modifying
+#        echo "Current contents of $VERSION_FILE:"
+#        cat $VERSION_FILE
+#
+#        # Increment VERSION_CODE by 1
+#        VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
+#        echo "Current VERSION_CODE: $VERSION_CODE"
+#
+#        VERSION_CODE=$((VERSION_CODE + 1))
+#        echo "New VERSION_CODE: $VERSION_CODE"
+#
+#        # Set VERSION_NAME to the supplied version
+#        VERSION_NAME="${{ inputs.version }}"
+#
+#        # If the version starts with a 'v', remove it
+#        if [[ "$VERSION_NAME" == v* ]]; then
+#          VERSION_NAME="${VERSION_NAME:1}"
+#        fi
+#        echo "Setting VERSION_NAME to: $VERSION_NAME"
+#
+#        # Update the version.properties file
+#        sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE
+#        sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
+#
+#        # Log the new contents of the version.properties file
+#        echo "Updated contents of $VERSION_FILE:"
+#        cat $VERSION_FILE
+#
+#        # Commit and push changes to version.properties
+#        git config --global user.name "github-actions"
+#        git config --global user.email "github-actions@github.com"
+#        git add $VERSION_FILE
+#        git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
+#
+#        git remote set-url origin https://x-access-token:${{ inputs.token }}@github.com/${{ github.repository }}
+#        git push origin HEAD

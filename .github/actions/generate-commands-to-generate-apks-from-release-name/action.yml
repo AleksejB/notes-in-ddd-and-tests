@@ -1,29 +1,27 @@
 name: Generate commands to generate APKs
-description: generates commands to assemble based on product flavours and build types from the release name
+description: generates commands to assemble based on whether the tag is a release candidate
+
+inputs:
+  non_production_tasks:
+    type: string
 
 runs:
   using: composite
   steps:
-    - name: Generate commands to generate APKs
-      run: |
-        RELEASE_NAME="${{ github.event.release.name }}"
-        
-        # Split release name into components
-        IFS=' | ' read -r VERSION PRODUCT_FLAVORS BUILD_TYPES <<< "$RELEASE_NAME"
-        
-        echo "Extracted Version: $VERSION"
-        echo "Extracted Product Flavours: $PRODUCT_FLAVORS"
-        echo "Extracted Build Types: $BUILD_TYPES"
-        
-        TASKS=""
-        for FLAVOR in $(echo "$PRODUCT_FLAVORS" | tr ',' ' '); do
-          for TYPE in $(echo "$BUILD_TYPES" | tr ',' ' '); do
-            TASK_NAME="assemble$(echo $FLAVOR | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')$(echo $TYPE | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')"
-            TASKS="$TASKS $TASK_NAME"
-          done
-        done
-        
-        echo "Generated Gradle Tasks: $TASKS"
-        echo "TASKS=$TASKS" >> $GITHUB_ENV
-
+    - name: Generate tasks from tag
       shell: bash
+      run: |
+        # Extract the tag name (e.g., refs/tags/v1.2.3-rc1 -> v1.2.3-rc1)
+        TAG_NAME="${GITHUB_REF#refs/tags/}"
+        echo "Detected tag: $TAG_NAME"
+
+        if [[ "$TAG_NAME" == *rc* ]]; then
+          echo "Tag contains 'rc' — using non-production tasks"
+          TASKS="${{ inputs.non_production_tasks }}"
+        else
+          echo "Tag does not contain 'rc' — using generic assemble task"
+          TASKS="assemble"
+        fi
+
+        echo "Final Gradle Tasks: $TASKS"
+        echo "TASKS=$TASKS" >> $GITHUB_ENV

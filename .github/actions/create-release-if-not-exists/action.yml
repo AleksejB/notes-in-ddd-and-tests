@@ -1,75 +1,30 @@
 name: Create release if not exists and attach APKs
-description: Create a release on GH if there is no release found with the same name and attach APKs
+description: Create a release on GH if there is no release found with the same tag, set its name to the tag, and attach APKs
 
 inputs:
-  version:
-    description: 'Version to set for the release (e.g., 1.2.3-rc1 or v1.2.3)'
-    required: true
-    type: string
   prerelease:
-    description: 'Is this a pre release?'
+    description: 'Is this a pre-release?'
     required: true
     type: boolean
   apk_paths:
     description: 'Comma-separated list of APK paths to upload'
     required: false
     type: string
-  product_flavours:
-    description: 'Comma-separated list of product flavours (e.g., staging, production)'
-    required: true
-    type: string
-  build_types:
-    description: 'Comma-separated list of build types (e.g., Release, Debug)'
-    required: true
-    type: string
   token:
-    description: 'Github token'
+    description: 'GitHub token'
     required: true
     type: string
 
 runs:
   using: composite
   steps:
-    - name: Check if release exists
+    - name: Create release if it does not exist and upload APKs
       shell: bash
       run: |
-        echo "Starting: Check if release exists"
-        VERSION=${{ inputs.version }}
-        PRODUCT_FLAVOURS=${{ inputs.product_flavours }}
-        BUILD_TYPES=${{ inputs.build_types }}
+        set -e
 
-        # Construct the release name
-        RELEASE_NAME="$VERSION | $PRODUCT_FLAVOURS | $BUILD_TYPES"
-        
-        echo "RELEASE_NAME=$RELEASE_NAME"
-
-        # Ensure tag name starts with 'v'
-        if [[ "$VERSION" =~ ^v ]]; then
-          TAG_NAME=$VERSION
-        else
-          TAG_NAME="v$VERSION"
-        fi
-        
-        echo "TAG_NAME=$TAG_NAME"
-
-        GIT_TAG=$(git tag)
-        echo "GIT_TAG=$GIT_TAG"
-        # Get the previous tag by date (ignoring alpha/beta/rc versions)
-        PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$' | head -n 1)
-        
-        echo "PREVIOUS_TAG=$PREVIOUS_TAG"
-
-        if [[ -z "$PREVIOUS_TAG" ]]; then
-          echo "No previous tag found. Using initial release message."
-          RELEASE_NOTES="## Changes\n- Initial release."
-        else
-          echo "Previous tag found: $PREVIOUS_TAG"
-          RELEASE_NOTES="## Changes since $PREVIOUS_TAG\n"
-          RELEASE_NOTES+="$(git log $PREVIOUS_TAG..HEAD --pretty=format:"- %s" --reverse)"
-        fi
-
-        echo "Generated Release Notes:"
-        echo "$RELEASE_NOTES"
+        TAG_NAME="${GITHUB_REF#refs/tags/}"
+        echo "Using tag: $TAG_NAME"
 
         # Check if the release exists
         RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
@@ -77,49 +32,47 @@ runs:
           "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
 
         if [[ "$RESPONSE" == "404" ]]; then
-          echo "Release not found. Creating release for version $TAG_NAME..."
+          echo "Release not found — creating release..."
 
-          # Create GitHub Release with auto-generated release notes
-          RELEASE_RESPONSE=$(curl -s \
-            -X POST \
+          CREATE_RESPONSE=$(curl -s -X POST \
             -H "Authorization: token ${{ inputs.token }}" \
-            -d '{
-              "tag_name": "'"$TAG_NAME"'",
-              "name": "'"$RELEASE_NAME"'",
-              "body": "'"$(echo "$RELEASE_NOTES" | jq -sR .)"'",
-              "draft": false,
-              "prerelease": '${{ inputs.prerelease }}'
-            }' \
-            "https://api.github.com/repos/${{ github.repository }}/releases")
-
-          # Extract release ID from response
-          RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
+            -H "Accept: application/vnd.github+json" \
+            -d @- "https://api.github.com/repos/${{ github.repository }}/releases" <<EOF
+          {
+            "tag_name": "$TAG_NAME",
+            "name": "$TAG_NAME",
+            "prerelease": ${{ inputs.prerelease }},
+            "generate_release_notes": true
+          }
+        EOF
+        )
+        
+        echo "$CREATE_RESPONSE" > response.json
         else
-          echo "Release for version $TAG_NAME already exists. Fetching ID..."
-          RELEASE_ID=$(jq -r '.id' response.json)
+        echo "Release already exists — using existing release data"
         fi
-
-        echo "Release ID: $RELEASE_ID"
-
-        # Upload APKs if provided
+        
+        RELEASE_ID=$(jq -r '.id' response.json)
+      echo "Release ID: $RELEASE_ID"
+        
         if [[ -n "${{ inputs.apk_paths }}" ]]; then
-          IFS=',' read -r -a APK_ARRAY <<< "${{ inputs.apk_paths }}"
-
-          for APK in "${APK_ARRAY[@]}"; do
-            APK_PATH=$(echo $APK | xargs) # Trim spaces
-            FILENAME=$(basename "$APK_PATH")
-
-            echo "Uploading $FILENAME..."
-
-            curl -s \
-              -X POST \
-              -H "Authorization: token ${{ inputs.token }}" \
-              -H "Content-Type: application/vnd.android.package-archive" \
-              --data-binary @"$APK_PATH" \
-              "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
-
-            echo "$FILENAME uploaded successfully."
-          done
+        IFS=',' read -r -a APK_ARRAY <<< "${{ inputs.apk_paths }}"
+        
+        for APK in "${APK_ARRAY[@]}"; do
+        APK_PATH=$(echo "$APK" | xargs) # Trim whitespace
+        FILENAME=$(basename "$APK_PATH")
+        
+        echo "Uploading $FILENAME..."
+        
+        curl -s \
+        -X POST \
+      -H "Authorization: token ${{ inputs.token }}" \
+      -H "Content-Type: application/vnd.android.package-archive" \
+        --data-binary @"$APK_PATH" \
+        "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
+        
+        echo "$FILENAME uploaded successfully."
+        done
         else
-          echo "No APK paths provided. Skipping upload."
+        echo "No APK paths provided. Skipping upload."
         fi

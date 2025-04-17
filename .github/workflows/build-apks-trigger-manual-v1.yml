@@ -22,6 +22,9 @@ on:
         required: false
         type: string
 
+#I need to:
+# - on release call this
+
 
 permissions:
   contents: write
@@ -43,10 +46,19 @@ jobs:
           java-version: '17'
 
       - name: Bump Version
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version@master
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version-based-on-tag@master
         with:
-          version: ${{ inputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate github-credentials.properties
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-github-properties-file@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate files
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-files@master
+        with:
+          files: ${{ inputs.files }}
 
       - name: Generate commands to generate APKs
         uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-inputs@master

@@ -1,0 +1,52 @@
+name: Create release if not exists and attach APKs
+description: Create a release on GH if there is no release found with the same name and attach APKs
+
+inputs:
+  apk_paths:
+    description: 'Comma-separated list of APK paths to upload'
+    required: false
+    type: string
+  token:
+    description: 'Github token'
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Check if release exists
+      shell: bash
+      run: |
+        RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+          -H "Authorization: token ${{ inputs.token }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+        
+        if [[ "$RESPONSE" == "404" ]]; then
+        echo "❌ Release with tag $TAG_NAME does not exist. Exiting."
+        exit 1
+        fi
+        
+        RELEASE_ID=$(jq -r '.id' response.json)
+        echo "Release ID: $RELEASE_ID"
+        
+        if [[ -n "${{ inputs.apk_paths }}" ]]; then
+              IFS=',' read -r -a APK_ARRAY <<< "${{ inputs.apk_paths }}"
+
+              for APK in "${APK_ARRAY[@]}"; do
+                APK_PATH=$(echo "$APK" | xargs) # Trim spaces
+                FILENAME=$(basename "$APK_PATH")
+
+                echo "Uploading $FILENAME..."
+
+                curl -s \
+                  -X POST \
+                  -H "Authorization: token ${{ inputs.token }}" \
+                  -H "Content-Type: application/vnd.android.package-archive" \
+                  --data-binary @"$APK_PATH" \
+                  "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
+
+                echo "$FILENAME uploaded successfully."
+              done
+            else
+              echo "No APK paths provided. Skipping upload."
+            fi

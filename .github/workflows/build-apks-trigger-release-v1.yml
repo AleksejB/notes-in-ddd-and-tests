@@ -23,43 +23,10 @@ jobs:
           java-version: '17'
 
       - name: Bump Version
-        run: |
-          VERSION_FILE=version.properties
-
-          # Log the file contents before modifying
-          echo "Current contents of $VERSION_FILE:"
-          cat $VERSION_FILE
-
-          # Increment VERSION_CODE by 1
-          VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
-          echo "Current VERSION_CODE: $VERSION_CODE"
-
-          VERSION_CODE=$((VERSION_CODE + 1))
-          echo "New VERSION_CODE: $VERSION_CODE"
-
-          # Set VERSION_NAME to the supplied version
-          VERSION_NAME="${{ github.event.release.tag_name }}"
-
-          # If the version starts with a 'v', remove it
-          if [[ "$VERSION_NAME" == v* ]]; then
-            VERSION_NAME="${VERSION_NAME:1}"
-          fi
-          echo "Setting VERSION_NAME to: $VERSION_NAME"
-
-          # Update the version.properties file
-          sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE 
-          sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
-
-          # Log the new contents of the version.properties file
-          echo "Updated contents of $VERSION_FILE:"
-          cat $VERSION_FILE
-
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add $VERSION_FILE
-          git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
-          git push origin HEAD:refs/heads/master  # Replace "main" with your default branch name
-
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/bump-version-based-on-tag@master
+        with:
+          version: ${{ inputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate commands to generate APKs
         run: |
