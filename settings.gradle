@@ -26,6 +26,14 @@ if (secretsFile.exists()) {
     throw new GradleException("Missing map.properties file")
 }
 
+def propsFile = Paths.get(
+        System.getProperty("user.home"),
+        ".sonin",
+        "github-credentials.properties"
+).toFile()
+
+loadPropertiesToExtra(propsFile, project)
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
