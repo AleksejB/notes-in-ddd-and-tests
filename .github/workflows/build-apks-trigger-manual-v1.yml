@@ -51,11 +51,6 @@ jobs:
         with:
           non_production_tasks: ${{ inputs.tasks }}
 
-      - name: Generate files
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-files@master
-        with:
-          files: ${{ inputs.files }}
-
       - name: Run Gradle Task
         uses: AleksejB/notes-in-ddd-and-tests/.github/actions/run-gradle-task@master
         with:

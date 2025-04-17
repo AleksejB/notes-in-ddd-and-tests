@@ -17,7 +17,7 @@ runs:
 
         if [[ "$TAG_NAME" == *rc* ]]; then
           echo "Tag contains 'rc' — using non-production tasks"
-          TASKS="${{ inputs.non_production_tasks }}"
+          TASKS="$INPUT_NON_PRODUCTION_TASKS"
         else
           echo "Tag does not contain 'rc' — using generic assemble task"
           TASKS="assemble"
