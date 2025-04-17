@@ -6,25 +6,14 @@ on:
       version:
         required: true
         type: string
-      product_flavour:
+      tasks:
         required: false
         type: string
-        default: 'staging'
-      build_type:
-        required: true
-        type: string
-      prerelease:
-        required: false
-        type: boolean
-        default: true
+        default: 'assembleStagingRelease, assembleUatRelease'
       files:
         description: Multiline string of lines like "filename=content"
         required: false
         type: string
-
-#I need to:
-# - on release call this
-
 
 permissions:
   contents: write
@@ -85,8 +74,6 @@ jobs:
           version: ${{ inputs.version }}
           prerelease: ${{ inputs.prerelease }}
           apk_paths: ${{ env.APK_PATHS }}
-          product_flavours: ${{ inputs.product_flavour }}
-          build_types: ${{ inputs.build_type }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify slack
