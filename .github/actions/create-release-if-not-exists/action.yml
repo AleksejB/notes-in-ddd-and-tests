@@ -53,7 +53,7 @@ runs:
         fi
         
         RELEASE_ID=$(jq -r '.id' response.json)
-      echo "Release ID: $RELEASE_ID"
+        echo "Release ID: $RELEASE_ID"
         
         if [[ -n "${{ inputs.apk_paths }}" ]]; then
         IFS=',' read -r -a APK_ARRAY <<< "${{ inputs.apk_paths }}"
@@ -66,8 +66,8 @@ runs:
         
         curl -s \
         -X POST \
-      -H "Authorization: token ${{ inputs.token }}" \
-      -H "Content-Type: application/vnd.android.package-archive" \
+        -H "Authorization: token ${{ inputs.token }}" \
+        -H "Content-Type: application/vnd.android.package-archive" \
         --data-binary @"$APK_PATH" \
         "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$FILENAME"
         
