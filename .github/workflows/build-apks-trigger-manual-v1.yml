@@ -3,7 +3,7 @@ name: Trigger manual
 on:
   workflow_call:
     inputs:
-      tasks:
+      non_production_tasks:
         required: false
         type: string
         default: "assembleStagingRelease, assembleUatRelease"
@@ -47,10 +47,9 @@ jobs:
           files: ${{ inputs.files }}
 
       - name: Generate commands to generate APKs
-        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-inputs@master
+        uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-commands-to-generate-apks-from-release-name@master
         with:
-          product_flavour: ${{ inputs.product_flavour }}
-          build_type: ${{ inputs.build_type }}
+          non_production_tasks: ${{ inputs.tasks }}
 
       - name: Generate files
         uses: AleksejB/notes-in-ddd-and-tests/.github/actions/generate-files@master

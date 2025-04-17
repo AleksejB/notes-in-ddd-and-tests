@@ -10,7 +10,7 @@ jobs:
   deploy:
     uses: AleksejB/notes-in-ddd-and-tests/.github/workflows/build-apks-trigger-manual-v1.yml@master
     with:
-      tasks:
+      non_production_tasks:
         "assembleStagingRelease, assembleUatRelease"
       files: | 
         map.properties=MAPS_API_KEY=asdasd
