@@ -24,7 +24,7 @@ package com.aleksejb.core.domain.usecase.text
 
 //    @get:Rule
 //    val instantTaskExecutorRule = InstantTaskExecutorRule()
-//
+
 //    @get:Rule
 //    val testCoroutineRule = CoroutineTestRule()
 
