@@ -56,10 +56,7 @@ runs:
         # Find and checkout the default branch to avoid detached HEAD
         DEFAULT_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
         echo "Default branch is: $DEFAULT_BRANCH"
-#        git checkout $DEFAULT_BRANCH
 
-        # Commit and push changes
-#        git add $VERSION_FILE
         git add *
         git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
         git push origin $DEFAULT_BRANCH
