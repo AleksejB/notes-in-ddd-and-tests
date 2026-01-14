@@ -59,6 +59,7 @@ runs:
 #        git checkout $DEFAULT_BRANCH
 
         # Commit and push changes
-        git add $VERSION_FILE
+#        git add $VERSION_FILE
+        git add *
         git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
         git push origin $DEFAULT_BRANCH
