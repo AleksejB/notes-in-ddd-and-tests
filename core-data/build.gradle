@@ -48,6 +48,9 @@ android {
 dependencies {
     implementation project(":core-domain")
 
+    implementation "io.reactivex.rxjava2:rxjava:2.1.7"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+
     implementation libs.bundles.room
     ksp libs.room.compiler
     implementation libs.room.ktx

@@ -59,6 +59,9 @@ dependencies {
 
     implementation(libs.material)
 
+    implementation "io.reactivex.rxjava2:rxjava:2.1.7"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+
     implementation(libs.bundles.androidx)
     implementation(libs.bundles.compose.ui)
 
