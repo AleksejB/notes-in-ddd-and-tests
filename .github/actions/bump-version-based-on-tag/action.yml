@@ -15,37 +15,6 @@ runs:
       run: |
         VERSION_FILE=version.properties
 
-        # Get the tag name (e.g., refs/tags/v1.2.3 -> v1.2.3)
-        RAW_TAG=${GITHUB_REF#refs/tags/}
-        echo "Tag that triggered the workflow: $RAW_TAG"
-
-        # Strip leading 'v' if it exists
-        if [[ "$RAW_TAG" == v* ]]; then
-          VERSION_NAME="${RAW_TAG:1}"
-        else
-          VERSION_NAME="$RAW_TAG"
-        fi
-        echo "Parsed VERSION_NAME: $VERSION_NAME"
-
-        # Log the file contents before modifying
-        echo "Current contents of $VERSION_FILE:"
-        cat $VERSION_FILE
-
-        # Increment VERSION_CODE by 1
-        VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
-        echo "Current VERSION_CODE: $VERSION_CODE"
-
-        VERSION_CODE=$((VERSION_CODE + 1))
-        echo "New VERSION_CODE: $VERSION_CODE"
-
-        # Update the version.properties file
-        sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE 
-        sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
-
-        # Log the new contents
-        echo "Updated contents of $VERSION_FILE:"
-        cat $VERSION_FILE
-
         # Configure Git
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
@@ -53,12 +22,90 @@ runs:
         # Set remote with authentication
         git remote set-url origin https://x-access-token:${{ inputs.token }}@github.com/${{ github.repository }}
 
-        # Find and checkout the default branch to avoid detached HEAD
+        # Determine default branch
         DEFAULT_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
         echo "Default branch is: $DEFAULT_BRANCH"
+
+        # Checkout default branch FIRST
+        git fetch origin
         git checkout -B $DEFAULT_BRANCH origin/$DEFAULT_BRANCH
 
-        # Commit and push changes
+        # Get the tag name
+        RAW_TAG=${GITHUB_REF#refs/tags/}
+        echo "Tag that triggered the workflow: $RAW_TAG"
+
+        # Strip leading 'v'
+        if [[ "$RAW_TAG" == v* ]]; then
+          VERSION_NAME="${RAW_TAG:1}"
+        else
+          VERSION_NAME="$RAW_TAG"
+        fi
+        echo "Parsed VERSION_NAME: $VERSION_NAME"
+
+        echo "Current contents of $VERSION_FILE:"
+        cat $VERSION_FILE
+
+        VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
+        echo "Current VERSION_CODE: $VERSION_CODE"
+
+        VERSION_CODE=$((VERSION_CODE + 1))
+        echo "New VERSION_CODE: $VERSION_CODE"
+
+        sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE
+        sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
+
+        echo "Updated contents of $VERSION_FILE:"
+        cat $VERSION_FILE
+
         git add $VERSION_FILE
         git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
         git push origin $DEFAULT_BRANCH
+#        VERSION_FILE=version.properties
+#
+#        # Get the tag name (e.g., refs/tags/v1.2.3 -> v1.2.3)
+#        RAW_TAG=${GITHUB_REF#refs/tags/}
+#        echo "Tag that triggered the workflow: $RAW_TAG"
+#
+#        # Strip leading 'v' if it exists
+#        if [[ "$RAW_TAG" == v* ]]; then
+#          VERSION_NAME="${RAW_TAG:1}"
+#        else
+#          VERSION_NAME="$RAW_TAG"
+#        fi
+#        echo "Parsed VERSION_NAME: $VERSION_NAME"
+#
+#        # Log the file contents before modifying
+#        echo "Current contents of $VERSION_FILE:"
+#        cat $VERSION_FILE
+#
+#        # Increment VERSION_CODE by 1
+#        VERSION_CODE=$(grep 'VERSION_CODE=' $VERSION_FILE | cut -d '=' -f2)
+#        echo "Current VERSION_CODE: $VERSION_CODE"
+#
+#        VERSION_CODE=$((VERSION_CODE + 1))
+#        echo "New VERSION_CODE: $VERSION_CODE"
+#
+#        # Update the version.properties file
+#        sed -i "s/^VERSION_CODE=.*/VERSION_CODE=$VERSION_CODE/" $VERSION_FILE
+#        sed -i "s/^VERSION_NAME=.*/VERSION_NAME=$VERSION_NAME/" $VERSION_FILE
+#
+#        # Log the new contents
+#        echo "Updated contents of $VERSION_FILE:"
+#        cat $VERSION_FILE
+#
+#        # Configure Git
+#        git config --global user.name "github-actions"
+#        git config --global user.email "github-actions@github.com"
+#
+#        # Set remote with authentication
+#        git remote set-url origin https://x-access-token:${{ inputs.token }}@github.com/${{ github.repository }}
+#
+#        # Find and checkout the default branch to avoid detached HEAD
+#        DEFAULT_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+#        echo "Default branch is: $DEFAULT_BRANCH"
+#        git checkout -B $DEFAULT_BRANCH origin/$DEFAULT_BRANCH
+#
+#        # Commit and push changes
+#        git add $VERSION_FILE
+#        git commit -m "Bump version to $VERSION_NAME, increment VERSION_CODE to $VERSION_CODE"
+#        git push origin $DEFAULT_BRANCH
